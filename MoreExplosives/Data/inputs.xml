@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<modded_inputs>
+	<inputs>
+		<actions>
+			<input name="UADetonatorCycleMode" loc="moe_settings_detonatorcyclemode"/>
+		</actions>
+		<sorting name="MOE" loc="MOE">
+			<input name="UADetonatorCycleMode"/>
+		</sorting>
+	</inputs>
+	<preset>		
+		<input name="UADetonatorCycleMode">
+			<btn name="kB" />
+		</input>			
+	</preset>
+</modded_inputs>

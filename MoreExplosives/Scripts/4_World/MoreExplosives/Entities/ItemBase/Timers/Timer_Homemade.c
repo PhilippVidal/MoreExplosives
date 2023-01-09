@@ -1,0 +1,1 @@
+class MOE_Timer_Homemade : MOE_ComponentTimerBase {}

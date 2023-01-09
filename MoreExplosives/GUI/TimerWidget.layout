@@ -1,0 +1,234 @@
+FrameWidgetClass RootFrame {
+ position 0 0
+ size 800 300
+ halign center_ref
+ valign center_ref
+ hexactpos 1
+ vexactpos 1
+ hexactsize 1
+ vexactsize 1
+ {
+  PanelWidgetClass PanelBackground {
+   ignorepointer 1
+   color 0.1098 0.1098 0.1098 1
+   position 0 0
+   size 1 1
+   halign center_ref
+   valign center_ref
+   hexactpos 1
+   vexactpos 1
+   hexactsize 0
+   vexactsize 0
+   style rover_sim_colorable
+   {
+    PanelWidgetClass PanelSet {
+     disabled 0
+     clipchildren 1
+     inheritalpha 0
+     ignorepointer 1
+     keepsafezone 0
+     color 0.4392 0.4392 0.4392 1
+     position 274.21002 0
+     size 150 120
+     halign center_ref
+     valign center_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     scaled 1
+     draggable 0
+     style editor_selection
+     "no focus" 0
+     {
+      TextWidgetClass TextSet {
+       visible 1
+       ignorepointer 1
+       position 0 0
+       size 150 120
+       halign center_ref
+       valign center_ref
+       hexactpos 1
+       vexactpos 1
+       hexactsize 1
+       vexactsize 1
+       text "SET"
+       font "gui/fonts/sdf_metronlight72"
+       text_proportion 0.5
+       "size to text h" 0
+       "text halign" center
+       "text valign" center
+      }
+      ButtonWidgetClass ButtonSet {
+       position 0 0
+       size 1 1
+       halign center_ref
+       valign center_ref
+       hexactpos 1
+       vexactpos 1
+       hexactsize 0
+       vexactsize 0
+      }
+     }
+    }
+    PanelWidgetClass PanelTimer {
+     ignorepointer 1
+     color 0.4392 0.4392 0.4392 1
+     position -90.78999 0
+     size 500 180
+     halign center_ref
+     valign center_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     style editor_selection
+     {
+      TextWidgetClass TextColon {
+       visible 1
+       ignorepointer 1
+       position 0 0
+       size 35 180
+       halign center_ref
+       valign center_ref
+       hexactpos 1
+       vexactpos 1
+       hexactsize 1
+       vexactsize 1
+       text ":"
+       font "gui/fonts/sdf_metronlight72"
+       "text offset" 0 -5
+       "exact text" 0
+       "size to text h" 0
+       "text halign" center
+       "text valign" center
+      }
+      PanelWidgetClass PanelMinutes {
+       ignorepointer 1
+       position -135 0
+       size 230 180
+       halign center_ref
+       valign center_ref
+       hexactpos 1
+       vexactpos 1
+       hexactsize 1
+       vexactsize 1
+       {
+        TextWidgetClass TextMinutes {
+         visible 1
+         ignorepointer 1
+         position 0 0
+         size 1 1
+         halign center_ref
+         valign center_ref
+         hexactpos 1
+         vexactpos 1
+         hexactsize 0
+         vexactsize 0
+         text "00"
+         font "gui/fonts/sdf_metronlight72"
+         "size to text h" 0
+         "text halign" center
+         "text valign" center
+        }
+        EditBoxWidgetClass EditBoxMinutes {
+         visible 1
+         color 1 1 1 0
+         size 1 1
+         halign center_ref
+         valign center_ref
+         hexactpos 1
+         vexactpos 1
+         hexactsize 0
+         vexactsize 0
+        }
+       }
+      }
+      PanelWidgetClass PanelSeconds {
+       ignorepointer 1
+       position 135 0
+       size 230 180
+       halign center_ref
+       valign center_ref
+       hexactpos 1
+       vexactpos 1
+       hexactsize 1
+       vexactsize 1
+       {
+        TextWidgetClass TextSeconds {
+         visible 1
+         ignorepointer 1
+         position 0 0
+         size 1 1
+         halign center_ref
+         valign center_ref
+         hexactpos 1
+         vexactpos 1
+         hexactsize 0
+         vexactsize 0
+         text "00"
+         font "gui/fonts/sdf_metronlight72"
+         "size to text h" 0
+         "text halign" center
+         "text valign" center
+        }
+        EditBoxWidgetClass EditBoxSeconds {
+         visible 1
+         color 1 1 1 0
+         size 1 1
+         halign center_ref
+         valign center_ref
+         hexactpos 1
+         vexactpos 1
+         hexactsize 0
+         vexactsize 0
+        }
+       }
+      }
+     }
+    }
+    PanelWidgetClass PanelClose {
+     ignorepointer 1
+     color 0.4392 0.4392 0.4392 1
+     size 50 50
+     halign right_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     style editor_selection
+     {
+      TextWidgetClass TextClose {
+       visible 1
+       ignorepointer 1
+       size 50 50
+       halign center_ref
+       valign center_ref
+       hexactpos 1
+       vexactpos 1
+       hexactsize 1
+       vexactsize 1
+       style Normal
+       text "X"
+       font "gui/fonts/sdf_metronlight72"
+       text_proportion 0.5
+       "size to text h" 0
+       "text halign" center
+       "text valign" center
+      }
+      ButtonWidgetClass ButtonClose {
+       position 0 0
+       size 1 1
+       halign center_ref
+       valign center_ref
+       hexactpos 1
+       vexactpos 1
+       hexactsize 0
+       vexactsize 0
+      }
+     }
+    }
+   }
+  }
+ }
+}
