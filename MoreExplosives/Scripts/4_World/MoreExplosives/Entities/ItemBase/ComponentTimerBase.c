@@ -533,6 +533,12 @@ class MOE_ComponentTimerBase : MOE_ComponentTriggerBase
 	
 	override bool CanOpenUI()
 	{
+		MOE_ConfigDataTimer configData = GetConfigData_Timer();
+		if(configData && (configData.MinTimer == configData.MaxTimer))
+		{
+			return false;
+		}
+		
 		return !IsRunning();
 	}
 	

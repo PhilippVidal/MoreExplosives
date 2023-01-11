@@ -1267,21 +1267,6 @@ class MOE_ExplosiveBase : ItemBase
 		return GetConfigData().AttachableTriggers;
 	}
 	
-	vector GetPlacementOffsetRotation()
-	{
-		return GetConfigData().PlacementOffsetRotation;
-	}
-	
-	vector GetPlacementOffsetPosition()
-	{
-		return GetConfigData().PlacementOffsetPosition;
-	}
-	
-	int GetExplosionParticleID()
-	{
-		return GetConfigData().ExplosionParticleIndex;
-	}
-	
 	array<string> GetArmTools()
 	{
 		return GetConfigData().ArmTools;

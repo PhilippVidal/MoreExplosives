@@ -38,7 +38,7 @@ class CfgMods
 
 class CfgMoreExplosives 
 {
-	//Can only object with door-like construction parts be raided? (i.e., any build construction part has 'is_gate = 1' set)
+	//Can only object with door-like construction parts be raided? (i.e., any built construction part has 'is_gate = 1' set)
 	doorRaidOnlyEnabled = 0;
 
 	//Is custom damage for base building object enabled? 
@@ -177,12 +177,7 @@ class CfgVehicles
 			attachableTriggers[] = {
 				"MOE_Timer_Homemade",
 				"MOE_Receiver_Homemade"
-			};
-			
-			placementOffsetPosition = "0 0 0"; 
-			placementOffsetRotation = "-90 0 0"; 
-			
-			explosionParticle = "explosion_landmine_01";		
+			};		
 
 			armTools[] = {
 				"Unarmed"
@@ -222,11 +217,6 @@ class CfgVehicles
 				"MOE_Timer_Military",
 				"MOE_Receiver_Military"
 			};
-			
-			placementOffsetPosition = "0 0 0"; 
-			placementOffsetRotation = "0 0 0"; 
-			
-			explosionParticle = "explosion_landmine_01";
 
 			armTools[] = {
 				"Unarmed"

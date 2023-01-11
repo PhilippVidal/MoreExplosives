@@ -117,7 +117,7 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 	bool HasToBeMounted;
 	bool CanTakeDamageWhileMounted;
 	bool CanTakeDamageWhileArmed;
-	bool CanOnlyRaidDoors; //TODO: add to cpp
+	bool CanOnlyRaidDoors;
 	
 	string AmmoType;
 	string ExplosionBehaviourType;
@@ -152,11 +152,6 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 			
 		AmmoType 				= "Explosion_NonLethal";
 		ExplosionBehaviourType 	= "MOE_ExplosionBehaviourBasic";
-		
-		PlacementOffsetPosition = "0 0 0";
-		PlacementOffsetRotation = "0 0 0";
-		
-		ExplosionParticleIndex = 0;
 		
 		AttachableTriggers 		= new array<string>();
 		
@@ -222,17 +217,6 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 		
 		path = basePath + "defuseTools";
 		if(GetGame().ConfigIsExisting(path)) GetGame().ConfigGetTextArray(path, DefuseTools);
-			
-		
-		path = basePath + "placementOffsetPosition";
-		if(GetGame().ConfigIsExisting(path)) PlacementOffsetPosition = GetGame().ConfigGetTextOut(path).ToVector();	
-		
-		path = basePath + "placementOffsetRotation";
-		if(GetGame().ConfigIsExisting(path)) PlacementOffsetRotation = GetGame().ConfigGetTextOut(path).ToVector();
-		
-		
-		path = basePath + "explosionParticle";
-		if(GetGame().ConfigIsExisting(path)) ExplosionParticleIndex = ParticleList.GetParticleIDByName(GetGame().ConfigGetTextOut(path));
 	}
 
 #ifdef MOE_DEBUG_CONFIG		
@@ -260,11 +244,6 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 		{
 			Print(string.Format(" [%1]: %2", i, AttachableTriggers[i]));
 		}
-	
-		Print(string.Format("PlacementOffsetPosition: %1", PlacementOffsetPosition.ToString()));
-		Print(string.Format("PlacementOffsetRotation: %1", PlacementOffsetRotation.ToString()));
-		
-		Print(string.Format("ExplosionParticleIndex: %1", ExplosionParticleIndex));
 		
 		Print(string.Format("ArmTools: Count = %1", ArmTools.Count()));
 		for(i = 0; i < ArmTools.Count(); i++)

@@ -90,14 +90,6 @@ class CfgVehicles
 			//What triggers can be used with this explosive? 
 			attachableTriggers[] = {};
 			
-			//Local translation offset for placement
-			placementOffsetPosition = "0 0 0"; 
-			//Local rotational offset for placement (Angles -> Yaw, Pitch, Roll)
-			placementOffsetRotation = "0 0 0"; 
-			
-			//Particle for explosion effect
-			explosionParticle = "explosion_landmine_01";
-			
 			//Which tools can be used to manipulate (Arm, Disarm, Defuse) the explosive? 
 			//Use "Unarmed" for manipulation without any tools
 			armTools[] = {};

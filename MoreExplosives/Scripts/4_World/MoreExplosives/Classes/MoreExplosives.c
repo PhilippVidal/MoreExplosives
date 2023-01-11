@@ -120,7 +120,7 @@ class MoreExplosives
 				DMT_WARNING, 
 				g_Game.GetUIManager().GetMenu());
 			
-			GetGame().RequestExit(IDC_MAIN_QUIT);
+			GetGame().RequestExit(0);
 			delete this;		
 		}
 #endif		

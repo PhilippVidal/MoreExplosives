@@ -6,22 +6,10 @@ class CfgPatches
         weapons[]={};
         requiredVersion=0.1;
         requiredAddons[] = {
-            "MoreExplosives_Data",
-			"MoreExplosives_GUI",
-			"MoreExplosives_Scripts",
+			"MoreExplosives_Config",
             "BBP_Vanilla_Dmg"
         };
     };
-};
-
-class CfgMods
-{
-	class CustomMOEConfig_BBP
-	{
-		dir = "CustomMOEConfig_BBP";
-		name = "CustomMOEConfig_BBP";
-		type = "mod";	
-	};
 };
 
 ////////////////////////////////
