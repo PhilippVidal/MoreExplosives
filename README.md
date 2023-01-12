@@ -1,4 +1,4 @@
-More Explosives is a mod for DayZ that adds several new types of explosives. 
+[More Explosives](https://steamcommunity.com/sharedfiles/filedetails/?id=2916864737) is a mod for DayZ that adds several new types of explosives. 
 These explosives can be remote detonated or triggered through the use of a timer. 
 In addition to this, the mod offers a similar raiding experience to the [Breachingcharge mod](https://steamcommunity.com/sharedfiles/filedetails/?id=1827241477).
 
