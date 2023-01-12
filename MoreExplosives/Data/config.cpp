@@ -1113,6 +1113,7 @@ class CfgVehicles
 		weight = 750;
 		itemSize[]={1,3};
 		itemBehaviour=1; 
+		rotationFlags=16;
 
 		class DamageSystem
 		{
