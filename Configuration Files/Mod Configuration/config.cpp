@@ -17,7 +17,7 @@ class CfgPatches
 
 class CfgMoreExplosives 
 {
-	//Can only object with door-like construction parts be raided? (i.e., any built construction part has 'is_gate = 1' set)
+	//Can only object with door-like construction parts be raided? (i.e., any built construction part that has 'is_gate = 1' set)
 	doorRaidOnlyEnabled = 0;
 
 	//Is custom damage for base building object enabled? 
