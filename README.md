@@ -13,3 +13,5 @@ Detonators can be connected to multiple receivers and have several different mod
 The explosives make use of DayZ's damage system to damage most items in the game, but apply damage differently to base building objects in order to allow for greater configuration when it comes to base raiding. 
 
 Several aspects of these items can be [configured](https://github.com/PhilippVidal/MoreExplosives/wiki/Configuration) to fit a server and their intended usage.
+
+For more detailed information on the mod, please check out the [wiki page](https://github.com/PhilippVidal/MoreExplosives/wiki).
