@@ -42,21 +42,24 @@ class CfgMods
 			{
 				value = "";
 				files[] = {
-					"MoreExplosives/Scripts/3_Game"
+					"MoreExplosives/Scripts/3_Game",
+					"MoreExplosives/Scripts/Common"
 				};
 			};
 			class worldScriptModule
 			{
 				value = "";
 				files[] = {
-					"MoreExplosives/Scripts/4_World"
+					"MoreExplosives/Scripts/4_World",
+					"MoreExplosives/Scripts/Common"
 				};
 			};
 			class missionScriptModule
 			{
 				value = "";
 				files[] = {
-					"MoreExplosives/Scripts/5_Mission"
+					"MoreExplosives/Scripts/5_Mission",
+					"MoreExplosives/Scripts/Common"
 				};
 			};
 		};
