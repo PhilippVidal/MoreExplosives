@@ -21,7 +21,7 @@ class MOE_Explosive_Military : MOE_ExplosiveBase
 	//LED 
 	protected const string MATERIAL_LED_ON 	= "MoreExplosives\\Data\\Models\\Textures\\led_on.rvmat";
 	protected const string TEXTURE_LED_OFF 	= "MoreExplosives\\Data\\Models\\Textures\\c4_military_co.paa";
-	protected const string MATERIAL_LED_OFF 	= "MoreExplosives\\Data\\Models\\Textures\\c4_military.rvmat";
+	protected const string MATERIAL_LED_OFF = "MoreExplosives\\Data\\Models\\Textures\\c4_military.rvmat";
 
 	override void UpdateTimerVisuals(notnull MOE_ComponentTimerBase timer, int timerValueOverride = -1)
 	{

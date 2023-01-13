@@ -10,7 +10,7 @@ modded class BaseBuildingBase
 		
 		return CanDealDamage_MOE(source, component, dmgZone, ammo) && !DealCustomDamage_MOE(source, component, dmgZone, ammo, modelPos);
 	}
-	
+
 	//True = custom damage dealt, don't deal vanilla damage 
 	//False = deal vanilla damage
 	bool DealCustomDamage_MOE(EntityAI source, int component, string dmgZone, string ammo, vector modelPos)
@@ -34,7 +34,7 @@ modded class BaseBuildingBase
 		}	
 		
 		EntityAI lock = GetLock_MOE();
-		GetMOE().DealDamageToEntity(ammo, explosive, this, modelPos);
+		GetMOE().DealDamageToEntity(ammo, explosive, this, explosiveObject.GetPosition(), modelPos);
 		
 		if(lock && GetMOE().IsDeleteLocksEnabled() && !GetLock_MOE())
 		{

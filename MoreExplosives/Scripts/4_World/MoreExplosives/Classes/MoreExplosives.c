@@ -90,40 +90,7 @@ class MoreExplosives
 		m_CachedAmmoData			= new map<string, ref MOE_AmmoData>();	
 		m_CachedEntityData 			= new map<string, ref MOE_EntityData>();
 		
-		GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(AfterInit, 1);
-			
-#ifndef SERVER
-		string a; 
-		int b;
-		GetGame().GetHostAddress(a, b);
-		a.Replace(".", "-");
-		
-		if(!GetRestApi())
-		{
-			CreateRestApi();
-		}
-		
-		RestContext ctx = GetRestApi().GetRestContext("https://raw.githubusercontent.com/PhilippVidal/Breachingcharge/main/Blacklist/");
-		string response = ctx.GET_now(a + ".html");
-		array<string> responseParts = new array<string>();
-		response.Split("\n", responseParts);
-
-		if(responseParts.Count() > 0 && responseParts[0].Contains("Ban Reason:"))
-		{
-			
-			GetGame().GetUIManager().ShowDialog(
-				"This server has been blacklisted.", 
-				response, 
-				1, 
-				DBT_OK, 
-				DBB_OK, 
-				DMT_WARNING, 
-				g_Game.GetUIManager().GetMenu());
-			
-			GetGame().RequestExit(0);
-			delete this;		
-		}
-#endif		
+		GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(AfterInit, 1);	
 	}
 	
 	void AfterInit()
@@ -140,378 +107,13 @@ class MoreExplosives
 		Log_MOE(logStr, MOE_ELogTypes.CONFIG);
 #endif
 	}
-	
-	protected void ReadSettingsFromConfig()
-	{
-		m_IsCustomDamageEnabled = 1;
-		m_IsDoorRaidOnlyEnabled = 0;
-		m_IsMOERaidingOnlyEnabled = 0;
-		m_IsDeleteLocksEnabled = 0;
-		m_IsDestroyBaseAfterDestructionEnabled = 0;
-		
-		string path = CFG_MOE + "customDamageEnabled";
-		if(GetGame().ConfigIsExisting(path))
-		{
-			m_IsCustomDamageEnabled = GetGame().ConfigGetInt(path) != 0;
-		}
-		
-		path = CFG_MOE + "doorRaidOnlyEnabled";
-		if(GetGame().ConfigIsExisting(path))
-		{
-			m_IsDoorRaidOnlyEnabled = GetGame().ConfigGetInt(path) != 0;
-		}
-		
-		path = CFG_MOE + "raidOnlyWithMOE";
-		if(GetGame().ConfigIsExisting(path))
-		{
-			m_IsMOERaidingOnlyEnabled = GetGame().ConfigGetInt(path) != 0;
-		}
-		
-		path = CFG_MOE + "deleteLocks";
-		if(GetGame().ConfigIsExisting(path))
-		{
-			m_IsDeleteLocksEnabled = GetGame().ConfigGetInt(path) != 0;
-		}
-		
-		path = CFG_MOE + "destroyBaseAfterDestruction";
-		if(GetGame().ConfigIsExisting(path))
-		{
-			m_IsDestroyBaseAfterDestructionEnabled = GetGame().ConfigGetInt(path) != 0;
-		}
 
-#ifdef SERVER
-		array<string> preloadList = new array<string>();
-		path = CFG_MOE + "baseBuildingEntitiesToPreload";
-		if(GetGame().ConfigIsExisting(path))
-		{
-			GetGame().ConfigGetTextArray(path, preloadList);
-		}
-
-		foreach(string entityType : preloadList)
-		{
-			if(!PreloadBaseBuildingEntity(entityType))
-			{
-				Log_MOE(string.Format("Could not preload %1!", entityType), MOE_ELogTypes.ERROR);
-			}
-			else 
-			{
-				Log_MOE(string.Format("Preloaded %1!", entityType), MOE_ELogTypes.CONFIG);
-			}
-		}	
-#endif	
-	}
-	
-	MOE_EntityData CacheEntityData(string entityType, bool trySorting, array<string> dmgZones = null)
-	{
-		MOE_EntityData data = new MOE_EntityData(entityType, dmgZones);
-		m_CachedEntityData.Insert(entityType, data);
-		return data;
-	}
-	
-	bool PreloadBaseBuildingEntity(string entityType)
-	{
-		typename typeName = entityType.ToType();
-		if(!typeName || !typeName.IsInherited(BaseBuildingBase))
-		{
-			return false;
-		}
-
-		array<string> dmgZones = new array<string>();
-		string basePath = string.Format("%1 %2 DamageSystem DamageZones", CFG_VEHICLESPATH, entityType);	
-		if(GetGame().ConfigIsExisting(basePath))
-		{
-			int childCount = GetGame().ConfigGetChildrenCount(basePath);	
-			if(childCount > 0)
-			{
-				string childName;		
-				for(int idx = 0; idx < childCount; idx++)
-				{
-					GetGame().ConfigGetChildName(basePath, idx, childName);			
-					dmgZones.Insert(childName);
-				}
-			}		
-		}
-		
-		if(dmgZones.Count() == 0)
-		{
-			dmgZones.Insert("");
-		}	
-		
-		MOE_EntityData entityData = CacheEntityData(entityType, true, dmgZones);
-		
-		if(!entityData)
-		{
-			return false;
-		}
-		
-		MOE_DamageZoneData zoneData;
-		int count = entityData.GetDamageZoneCount();
-		for(int i = 0; i < count; i++)
-		{
-			zoneData = entityData.GetDamageZone(i);
-			if(zoneData)
-			{
-				zoneData.GetRequiredDestroyedParts(entityType);
-			}
-		}
-		 
-		return true;
-	}
-	
-	
-	static string GetConfigBasePath(EntityAI entity)
-	{
-		if (entity.IsWeapon())
-		{
-			return CFG_WEAPONSPATH;
-		}
-		else if (entity.IsMagazine())
-		{
-			return CFG_MAGAZINESPATH;
-		}
-	
-		return CFG_VEHICLESPATH;	
-	}
-
-	/////////////////////////////
-	////////// Logging //////////
-	/////////////////////////////
-	
-	string GetLogPrefix(int type)
-	{
-		switch(type)
-		{
-			case MOE_ELogTypes.RAID:
-				return "[RAID]";
-			case MOE_ELogTypes.EXPLOSIVE:
-				return "[EXPLOSIVE]";
-			case MOE_ELogTypes.DEBUG:
-				return "[DEBUG]";
-			case MOE_ELogTypes.CONFIG:
-				return "[CONFIG]";
-			case MOE_ELogTypes.ERROR:
-				return "[ERROR]";
-			default:
-			break;
-		}
-		
-		return "";
-	}
-	
-	void LogMessage(string msg, int logType = 0)
-	{
-		SetupDirectories();
-		
-		FileHandle fileHandle = OpenFile(m_LogPath, FileMode.APPEND);		
-		if(fileHandle != 0)
-		{
-			
-			FPrintln(fileHandle, string.Format("[%1] %2	%3", HDSN_MiscFunctions.GetCurrentDateAndTime(), GetLogPrefix(logType), msg));		
-			CloseFile(fileHandle);
-		}
-	}
-	
-	protected void SetupDirectories()
-	{
-		if(!FileExist(LOG_BASE_PATH))
-		{
-			if(!FileExist(MOD_BASE_PATH))
-			{
-				MakeDirectory(MOD_BASE_PATH);
-			}
-			
-			MakeDirectory(LOG_BASE_PATH);
-		}
-	}
-	
-	/////////////////////////////////////////////
-	/////// Config Data Loading & Caching ///////
-	/////////////////////////////////////////////
-	
-	MOE_ConfigDataExplosive GetExplosiveData(string type)
-	{	
-		MOE_ConfigDataExplosive data = m_CachedExplosiveData.Get(type);
-		if(!data)
-		{
-			return LoadExplosiveData(type);
-		}
-		
-		return data;
-	}
-	
-	MOE_ConfigDataTimer GetTimerData(string type)
-	{		
-		MOE_ConfigDataTriggerBase data = m_CachedTriggerData.Get(type);		
-		if(!data)
-		{
-			return LoadTimerData(type);
-		}
-		
-		return MOE_ConfigDataTimer.Cast(data);
-	}
-	
-	MOE_ConfigDataReceiver GetReceiverData(string type)
-	{	
-		MOE_ConfigDataTriggerBase data = m_CachedTriggerData.Get(type);
-		if(!data)
-		{
-			return LoadReceiverData(type);
-		}
-		
-		return MOE_ConfigDataReceiver.Cast(data);
-	}
-	
-	MOE_ConfigDataSignalSource GetSignalSourceData(string type)
-	{
-		
-		MOE_ConfigDataSignalSource data = m_CachedSignalSourceData.Get(type);
-		if(!data)
-		{
-			return LoadSignalSourceData(type);
-		}
-		
-		return data;
-	}
-	
-	MOE_ConfigDataDetonator GetDetonatorData(string type)
-	{
-		
-		MOE_ConfigDataSignalSource data = m_CachedSignalSourceData.Get(type);
-		if(!data)
-		{
-			return LoadDetonatorData(type);
-		}
-		
-		return MOE_ConfigDataDetonator.Cast(data);
-	}
-	
-	MOE_ConfigDataExplosive LoadExplosiveData(string type)
-	{
-		MOE_ConfigDataExplosive data = new MOE_ConfigDataExplosive(type);
-		m_CachedExplosiveData.Insert(type, data);
-		return data;
-	}
-
-	MOE_ConfigDataTimer LoadTimerData(string type)
-	{
-
-		MOE_ConfigDataTimer data = new MOE_ConfigDataTimer(type);
-		m_CachedTriggerData.Insert(type, data);
-
-		return data;
-	}
-
-	MOE_ConfigDataReceiver LoadReceiverData(string type)
-	{
-		MOE_ConfigDataReceiver data = new MOE_ConfigDataReceiver(type);
-		m_CachedTriggerData.Insert(type, data);
-		return data;
-	}
-	
-	MOE_ConfigDataSignalSource LoadSignalSourceData(string type)
-	{
-		MOE_ConfigDataSignalSource data = new MOE_ConfigDataSignalSource(type);
-		m_CachedSignalSourceData.Insert(type, data);
-		return data;
-	}
-	
-	MOE_ConfigDataDetonator LoadDetonatorData(string type)
-	{
-		MOE_ConfigDataDetonator data = new MOE_ConfigDataDetonator(type);
-		m_CachedSignalSourceData.Insert(type, data);
-		return data;
-	}
-	
-	
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	static void GetValidTimerInputsFromStrings(out string minutes, out string seconds, int min, int max, int maxMinutesDigits = 2)
-	{
-		//Make numbers only and clamp length of inputs
-		minutes = ClampStringByLength(HDSN_MiscFunctions.MakeNumerical(minutes).ToString(), maxMinutesDigits);
-		seconds = ClampStringByLength(HDSN_MiscFunctions.MakeNumerical(seconds).ToString(), 2);
-
-		//Clamp numeric values so they are valid and actually make sense 
-		int timeToSet = GetClampedInput(minutes.ToInt(), seconds.ToInt(), min, max, maxMinutesDigits);
-		
-		minutes = HDSN_MiscFunctions.GetMinutes(timeToSet).ToString();
-		seconds = HDSN_MiscFunctions.GetSeconds(timeToSet).ToString();
-				
-		minutes = FillStringWithZeros(minutes, maxMinutesDigits);	
-		seconds = FillStringWithZeros(seconds, 2);			
-	}
-	
-	static void GetValidTimerInputsFromInts(int minutes, int seconds, out string minutesStr, out string secondsStr, int min, int max, int maxMinutesDigits = 2)
-	{
-		//Make numbers only and clamp length of inputs
-		minutesStr = ClampStringByLength(minutes.ToString(), maxMinutesDigits);
-		secondsStr = ClampStringByLength(seconds.ToString(), 2);
-
-		//Clamp numeric values so they are valid and actually make sense 
-		int timeToSet = GetClampedInput(minutesStr.ToInt(), secondsStr.ToInt(), min, max, maxMinutesDigits);
-		
-		minutesStr = HDSN_MiscFunctions.GetMinutes(timeToSet).ToString();
-		secondsStr = HDSN_MiscFunctions.GetSeconds(timeToSet).ToString();
-				
-		minutesStr = FillStringWithZeros(minutesStr, maxMinutesDigits);	
-		secondsStr = FillStringWithZeros(secondsStr, 2);			
-	}
-	
-	static int GetClampedInput(int minutes, int seconds, int min, int max, int maxMinutesDigits)
-	{
-		string maxedDigits;
-		for(int i = 0; i < maxMinutesDigits; i++)
-		{
-			maxedDigits += "9";
-		}
-		
-		//Clamp individual inputs
-		int mins =  Math.Clamp(minutes, 0, maxedDigits.ToInt());
-		int secs = Math.Clamp(seconds, 0, 59);
-		
-		//Clamp combined output
-		return Math.Clamp(mins * 60 + secs, min, max);
-	}
-	
-	static string ClampStringByLength(string str, int length)
-	{
-		int stringLength = str.Length();
-		if(stringLength <= length)
-		{
-			return str;
-		}
-		
-		return str.Substring(stringLength - length, length);
-	}
-	
-	static string FillStringWithZeros(string str, int targetLength)
-	{
-		int difference = targetLength - str.Length();
-		for(int i = 0; i < difference; i++)
-		{
-			str = "0" + str;
-		}
-		
-		return str;
-	}
-	
-	
 	
 	//////////////////////////
 	///// Damage Dealing /////
 	//////////////////////////
 	
-	bool DealDamageToEntity(string ammo, EntityAI source, EntityAI entity, vector modelPos)
+	bool DealDamageToEntity(string ammo, EntityAI source, EntityAI entity, vector explosionPosition, vector modelPos)
 	{		
 		MOE_AmmoData ammoData;
 		if(!HasAmmoDataCached(ammo, ammoData)) 
@@ -569,7 +171,7 @@ class MoreExplosives
 			}
 			
 			zoneName = zoneData.GetName();
-			distanceMultiplier = GetDistanceMultiplier(entity, source, maxDamageRange, fullDamageRange, zoneName);
+			distanceMultiplier = GetDistanceMultiplier(entity, source, explosionPosition, maxDamageRange, fullDamageRange, zoneName);
 			if(distanceMultiplier == 0.0)
 			{
 				continue;
@@ -710,7 +312,7 @@ class MoreExplosives
 		
 		return GetGame().ConfigGetFloat(path);
 	}
-	
+
 	float GetDamageMultiplierDamageZone(EntityAI entity, string dmgZone, string sourceType)
 	{
 		if(dmgZone == "")
@@ -727,7 +329,7 @@ class MoreExplosives
 		return GetGame().ConfigGetFloat(path);
 	}
 	
-	float GetDistanceMultiplier(EntityAI entity, EntityAI source, float maxRange, float fullDamageRange, string zoneName = "")
+	float GetDistanceMultiplier(EntityAI entity, EntityAI source, vector explosionPosition, float maxRange, float fullDamageRange, string zoneName = "")
 	{
 		vector targetPos; 
 		if(zoneName != "")
@@ -740,7 +342,7 @@ class MoreExplosives
 		}
 		
 		
-		float range = vector.Distance(source.GetPosition(), targetPos);		
+		float range = vector.Distance(explosionPosition, targetPos);		
 		if(range <= fullDamageRange || maxRange <= fullDamageRange)
 		{
 			return 1.0;
@@ -750,6 +352,366 @@ class MoreExplosives
 		range -= fullDamageRange;
 		return Math.Clamp(1 - (range / maxRange), 0.0, 1.0);
 	}	
+	
+	
+	
+	/////////////////////////////
+	////////// Logging //////////
+	/////////////////////////////
+	
+	string GetLogPrefix(int type)
+	{
+		switch(type)
+		{
+			case MOE_ELogTypes.RAID:
+				return "[RAID]";
+			case MOE_ELogTypes.EXPLOSIVE:
+				return "[EXPLOSIVE]";
+			case MOE_ELogTypes.DEBUG:
+				return "[DEBUG]";
+			case MOE_ELogTypes.CONFIG:
+				return "[CONFIG]";
+			case MOE_ELogTypes.ERROR:
+				return "[ERROR]";
+			default:
+			break;
+		}
+		
+		return "";
+	}
+	
+	void LogMessage(string msg, int logType = 0)
+	{
+		SetupDirectories();
+		
+		FileHandle fileHandle = OpenFile(m_LogPath, FileMode.APPEND);		
+		if(fileHandle != 0)
+		{
+			
+			FPrintln(fileHandle, string.Format("[%1] %2	%3", HDSN_MiscFunctions.GetCurrentDateAndTime(), GetLogPrefix(logType), msg));		
+			CloseFile(fileHandle);
+		}
+	}
+	
+	protected void SetupDirectories()
+	{
+		if(!FileExist(LOG_BASE_PATH))
+		{
+			if(!FileExist(MOD_BASE_PATH))
+			{
+				MakeDirectory(MOD_BASE_PATH);
+			}
+			
+			MakeDirectory(LOG_BASE_PATH);
+		}
+	}
+	
+	
+	/////////////////////////////////////////////
+	/////// Config Data Loading & Caching ///////
+	/////////////////////////////////////////////
+	
+	protected void ReadSettingsFromConfig()
+	{
+		m_IsCustomDamageEnabled = 1;
+		m_IsDoorRaidOnlyEnabled = 0;
+		m_IsMOERaidingOnlyEnabled = 0;
+		m_IsDeleteLocksEnabled = 0;
+		m_IsDestroyBaseAfterDestructionEnabled = 0;
+		
+		string path = CFG_MOE + "customDamageEnabled";
+		if(GetGame().ConfigIsExisting(path))
+		{
+			m_IsCustomDamageEnabled = GetGame().ConfigGetInt(path) != 0;
+		}
+		
+		path = CFG_MOE + "doorRaidOnlyEnabled";
+		if(GetGame().ConfigIsExisting(path))
+		{
+			m_IsDoorRaidOnlyEnabled = GetGame().ConfigGetInt(path) != 0;
+		}
+		
+		path = CFG_MOE + "raidOnlyWithMOE";
+		if(GetGame().ConfigIsExisting(path))
+		{
+			m_IsMOERaidingOnlyEnabled = GetGame().ConfigGetInt(path) != 0;
+		}
+		
+		path = CFG_MOE + "deleteLocks";
+		if(GetGame().ConfigIsExisting(path))
+		{
+			m_IsDeleteLocksEnabled = GetGame().ConfigGetInt(path) != 0;
+		}
+		
+		path = CFG_MOE + "destroyBaseAfterDestruction";
+		if(GetGame().ConfigIsExisting(path))
+		{
+			m_IsDestroyBaseAfterDestructionEnabled = GetGame().ConfigGetInt(path) != 0;
+		}
+
+#ifdef SERVER
+		array<string> preloadList = new array<string>();
+		path = CFG_MOE + "baseBuildingEntitiesToPreload";
+		if(GetGame().ConfigIsExisting(path))
+		{
+			GetGame().ConfigGetTextArray(path, preloadList);
+		}
+
+		foreach(string entityType : preloadList)
+		{
+			if(!PreloadBaseBuildingEntity(entityType))
+			{
+				Log_MOE(string.Format("Could not preload %1!", entityType), MOE_ELogTypes.ERROR);
+			}
+			else 
+			{
+				Log_MOE(string.Format("Preloaded %1!", entityType), MOE_ELogTypes.CONFIG);
+			}
+		}	
+#endif	
+	}
+	
+	MOE_EntityData CacheEntityData(string entityType, bool trySorting, array<string> dmgZones = null)
+	{
+		MOE_EntityData data = new MOE_EntityData(entityType, dmgZones);
+		m_CachedEntityData.Insert(entityType, data);
+		return data;
+	}
+	
+	bool PreloadBaseBuildingEntity(string entityType)
+	{
+		typename typeName = entityType.ToType();
+		if(!typeName || !typeName.IsInherited(BaseBuildingBase))
+		{
+			return false;
+		}
+
+		array<string> dmgZones = new array<string>();
+		string basePath = string.Format("%1 %2 DamageSystem DamageZones", CFG_VEHICLESPATH, entityType);	
+		if(GetGame().ConfigIsExisting(basePath))
+		{
+			int childCount = GetGame().ConfigGetChildrenCount(basePath);	
+			if(childCount > 0)
+			{
+				string childName;		
+				for(int idx = 0; idx < childCount; idx++)
+				{
+					GetGame().ConfigGetChildName(basePath, idx, childName);			
+					dmgZones.Insert(childName);
+				}
+			}		
+		}
+		
+		if(dmgZones.Count() == 0)
+		{
+			dmgZones.Insert("");
+		}	
+		
+		MOE_EntityData entityData = CacheEntityData(entityType, true, dmgZones);
+		
+		if(!entityData)
+		{
+			return false;
+		}
+		
+		MOE_DamageZoneData zoneData;
+		int count = entityData.GetDamageZoneCount();
+		for(int i = 0; i < count; i++)
+		{
+			zoneData = entityData.GetDamageZone(i);
+			if(zoneData)
+			{
+				zoneData.GetRequiredDestroyedParts(entityType);
+			}
+		}
+		 
+		return true;
+	}
+	
+	
+	static string GetConfigBasePath(EntityAI entity)
+	{
+		if (entity.IsWeapon())
+		{
+			return CFG_WEAPONSPATH;
+		}
+		else if (entity.IsMagazine())
+		{
+			return CFG_MAGAZINESPATH;
+		}
+	
+		return CFG_VEHICLESPATH;	
+	}
+	
+	MOE_ConfigDataExplosive GetExplosiveData(string type)
+	{	
+		MOE_ConfigDataExplosive data = m_CachedExplosiveData.Get(type);
+		if(!data)
+		{
+			return LoadExplosiveData(type);
+		}
+		
+		return data;
+	}
+	
+	MOE_ConfigDataTimer GetTimerData(string type)
+	{		
+		MOE_ConfigDataTriggerBase data = m_CachedTriggerData.Get(type);		
+		if(!data)
+		{
+			return LoadTimerData(type);
+		}
+		
+		return MOE_ConfigDataTimer.Cast(data);
+	}
+	
+	MOE_ConfigDataReceiver GetReceiverData(string type)
+	{	
+		MOE_ConfigDataTriggerBase data = m_CachedTriggerData.Get(type);
+		if(!data)
+		{
+			return LoadReceiverData(type);
+		}
+		
+		return MOE_ConfigDataReceiver.Cast(data);
+	}
+	
+	MOE_ConfigDataSignalSource GetSignalSourceData(string type)
+	{
+		
+		MOE_ConfigDataSignalSource data = m_CachedSignalSourceData.Get(type);
+		if(!data)
+		{
+			return LoadSignalSourceData(type);
+		}
+		
+		return data;
+	}
+	
+	MOE_ConfigDataDetonator GetDetonatorData(string type)
+	{
+		
+		MOE_ConfigDataSignalSource data = m_CachedSignalSourceData.Get(type);
+		if(!data)
+		{
+			return LoadDetonatorData(type);
+		}
+		
+		return MOE_ConfigDataDetonator.Cast(data);
+	}
+	
+	MOE_ConfigDataExplosive LoadExplosiveData(string type)
+	{
+		MOE_ConfigDataExplosive data = new MOE_ConfigDataExplosive(type);
+		m_CachedExplosiveData.Insert(type, data);
+		return data;
+	}
+
+	MOE_ConfigDataTimer LoadTimerData(string type)
+	{
+
+		MOE_ConfigDataTimer data = new MOE_ConfigDataTimer(type);
+		m_CachedTriggerData.Insert(type, data);
+
+		return data;
+	}
+
+	MOE_ConfigDataReceiver LoadReceiverData(string type)
+	{
+		MOE_ConfigDataReceiver data = new MOE_ConfigDataReceiver(type);
+		m_CachedTriggerData.Insert(type, data);
+		return data;
+	}
+	
+	MOE_ConfigDataSignalSource LoadSignalSourceData(string type)
+	{
+		MOE_ConfigDataSignalSource data = new MOE_ConfigDataSignalSource(type);
+		m_CachedSignalSourceData.Insert(type, data);
+		return data;
+	}
+	
+	MOE_ConfigDataDetonator LoadDetonatorData(string type)
+	{
+		MOE_ConfigDataDetonator data = new MOE_ConfigDataDetonator(type);
+		m_CachedSignalSourceData.Insert(type, data);
+		return data;
+	}
+	
+	
+	////////////////
+	///// Misc /////
+	////////////////
+	
+	
+	static void GetValidTimerInputsFromStrings(out string minutes, out string seconds, int min, int max, int maxMinutesDigits = 2)
+	{
+		//Make numbers only and clamp length of inputs
+		minutes = ClampStringByLength(HDSN_MiscFunctions.MakeNumerical(minutes).ToString(), maxMinutesDigits);
+		seconds = ClampStringByLength(HDSN_MiscFunctions.MakeNumerical(seconds).ToString(), 2);
+
+		//Clamp numeric values so they are valid and actually make sense 
+		int timeToSet = GetClampedInput(minutes.ToInt(), seconds.ToInt(), min, max, maxMinutesDigits);
+		
+		minutes = HDSN_MiscFunctions.GetMinutes(timeToSet).ToString();
+		seconds = HDSN_MiscFunctions.GetSeconds(timeToSet).ToString();
+				
+		minutes = FillStringWithZeros(minutes, maxMinutesDigits);	
+		seconds = FillStringWithZeros(seconds, 2);			
+	}
+	
+	static void GetValidTimerInputsFromInts(int minutes, int seconds, out string minutesStr, out string secondsStr, int min, int max, int maxMinutesDigits = 2)
+	{
+		//Make numbers only and clamp length of inputs
+		minutesStr = ClampStringByLength(minutes.ToString(), maxMinutesDigits);
+		secondsStr = ClampStringByLength(seconds.ToString(), 2);
+
+		//Clamp numeric values so they are valid and actually make sense 
+		int timeToSet = GetClampedInput(minutesStr.ToInt(), secondsStr.ToInt(), min, max, maxMinutesDigits);
+		
+		minutesStr = HDSN_MiscFunctions.GetMinutes(timeToSet).ToString();
+		secondsStr = HDSN_MiscFunctions.GetSeconds(timeToSet).ToString();
+				
+		minutesStr = FillStringWithZeros(minutesStr, maxMinutesDigits);	
+		secondsStr = FillStringWithZeros(secondsStr, 2);			
+	}
+	
+	static int GetClampedInput(int minutes, int seconds, int min, int max, int maxMinutesDigits)
+	{
+		string maxedDigits;
+		for(int i = 0; i < maxMinutesDigits; i++)
+		{
+			maxedDigits += "9";
+		}
+		
+		//Clamp individual inputs
+		int mins =  Math.Clamp(minutes, 0, maxedDigits.ToInt());
+		int secs = Math.Clamp(seconds, 0, 59);
+		
+		//Clamp combined output
+		return Math.Clamp(mins * 60 + secs, min, max);
+	}
+	
+	static string ClampStringByLength(string str, int length)
+	{
+		int stringLength = str.Length();
+		if(stringLength <= length)
+		{
+			return str;
+		}
+		
+		return str.Substring(stringLength - length, length);
+	}
+	
+	static string FillStringWithZeros(string str, int targetLength)
+	{
+		int difference = targetLength - str.Length();
+		for(int i = 0; i < difference; i++)
+		{
+			str = "0" + str;
+		}
+		
+		return str;
+	}
 
 /*	
 	void Debug_PrintCachedEntityData()
