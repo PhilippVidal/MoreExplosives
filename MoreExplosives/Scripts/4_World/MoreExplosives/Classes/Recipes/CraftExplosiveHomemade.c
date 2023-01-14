@@ -28,9 +28,9 @@ class MOE_CraftExplosiveHomemade : RecipeBase
 		
 		m_IngredientAddHealth[0] = 0;// 0 = do nothing
 		m_IngredientSetHealth[0] = -1; // -1 = do nothing
-		m_IngredientAddQuantity[0] = -100;// 0 = do nothing
+		m_IngredientAddQuantity[0] = -1000;// 0 = do nothing
 		m_IngredientDestroy[0] = false;//true = destroy, false = do nothing
-		m_IngredientUseSoftSkills[0] = true;// set 'true' to allow modification of the values by softskills on this ingredient
+		m_IngredientUseSoftSkills[0] = false;// set 'true' to allow modification of the values by softskills on this ingredient
 		
 		//ingredient 2
 		InsertIngredient(1,"BurlapSack");//you can insert multiple ingredients this way
@@ -39,7 +39,7 @@ class MOE_CraftExplosiveHomemade : RecipeBase
 		m_IngredientSetHealth[1] = -1; // -1 = do nothing
 		m_IngredientAddQuantity[1] = 0;// 0 = do nothing
 		m_IngredientDestroy[1] = true;// false = do nothing
-		m_IngredientUseSoftSkills[1] = true;// set 'true' to allow modification of the values by softskills on this ingredient
+		m_IngredientUseSoftSkills[1] = false;// set 'true' to allow modification of the values by softskills on this ingredient
 		//----------------------------------------------------------------------------------------------------------------------
 		
 		//result1
