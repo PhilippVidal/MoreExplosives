@@ -4,4 +4,4 @@ The most common reasons for landing on this list are [repacking](https://github.
 
 Being blocked from using this mod does not break your server in any way (i.e., there is no crashing or malicious code being executed), players will receive a UI pop-up informing them the server has been blacklisted and will be disconnected.
 
-Blacklisted servers can appeal on the mod's [discord](https://discord.gg/ZC7NsZ9) in the appropriate channel.
+Blacklisted servers can appeal the ban on the mod's [discord](https://discord.gg/ZC7NsZ9) in the appropriate channel.
