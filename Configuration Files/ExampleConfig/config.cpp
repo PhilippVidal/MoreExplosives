@@ -61,7 +61,6 @@ class CfgVehicles
         {
             timeToMount = 60;
             hasToBeMounted = 1;
-            canTakeDamageWhileMounted = 0;
 
             attachableTriggers[] += {
 				"MOE_Timer_Homemade",
