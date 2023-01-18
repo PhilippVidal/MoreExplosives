@@ -81,6 +81,11 @@ modded class BaseBuildingBase
 			return false;		
 		}
 		
+		if(GetMOE().IsRaidSchedulingEnabled() && !GetMOE().IsInRaidSchedule())
+		{
+			return false;
+		}
+		
 		return true;
 	}
 	

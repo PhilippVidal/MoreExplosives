@@ -54,6 +54,9 @@ class CfgMoreExplosives
 	//Should the base be destroyed after an object has been successfully been raided? 
 	destroyBaseAfterDestruction = 0;
 
+	//Is raiding only possible during the set timeslots? 
+	raidSchedulingEnabled = 0;
+
 	//Which base building objects should be cached on 
 	//server start-up instead of during server session?
 	//Useful for objects that have many different damage zones and 
@@ -61,6 +64,42 @@ class CfgMoreExplosives
 	//when loaded during the actual server session  
 	baseBuildingEntitiesToPreload[] = {
 		"Watchtower"
+	};
+
+	//Only relevant if raid scheduling is enabled 
+	class RaidScheduling
+	{
+		//Offset in hours from UTC (Coordinated Universal Time)
+		//Does not automatically account for summer/winter/daylight savings time!
+		timeZoneOffset = 1;
+		
+		//Override this if you want to easily apply the same time slots to each day 
+		class Weekday
+		{
+			timeSlots[] = {};
+		};
+
+		class Monday : Weekday
+		{
+			//Example: 	raiding possible from 1:30 am till 9:49 am 
+			//			and from noon till 6 pm
+			//timeSlots[] = {
+			//	1.5, 9.81667,    //1:30 am till 9:49 am
+			//	12.0, 18.0	     //noon till 6 pm
+			//};
+		};
+
+		class Tuesday : Weekday {};
+
+		class Wednesday : Weekday {};
+
+		class Thursday : Weekday {};
+
+		class Friday : Weekday {};
+
+		class Saturday : Weekday {};
+
+		class Sunday : Weekday {};
 	};
 };
 

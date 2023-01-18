@@ -1,4 +1,4 @@
-modded class PluginRecipesManagerBase extends PluginBase
+modded class PluginRecipesManagerBase
 {	
 	override void RegisterRecipies()
 	{

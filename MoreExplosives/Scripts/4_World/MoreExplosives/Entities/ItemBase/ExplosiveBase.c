@@ -991,6 +991,22 @@ class MOE_ExplosiveBase : ItemBase
 		output = ConfigGetString("descriptionShort") + "\n#STR_MOE_Explosive_Usage_Description\n";
 		
 		MOE_ConfigDataExplosive explosiveData = GetConfigData();
+		
+		if(GetMOE().IsRaidSchedulingEnabled())
+		{
+			string inRaidSchedule; 
+			if(GetMOE().IsInRaidSchedule())
+			{
+				inRaidSchedule = "#STR_MOE_Yes";
+			}
+			else 
+			{
+				inRaidSchedule = "#STR_MOE_No";
+			}
+			
+			output += string.Format("\n%1: %2", "#STR_MOE_Raiding_Allowed_Schedule", inRaidSchedule);
+		}
+			
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToArm", explosiveData.TimeToArm);
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToDisarm", explosiveData.TimeToDisarm);
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToDefuse", explosiveData.TimeToDefuse);
