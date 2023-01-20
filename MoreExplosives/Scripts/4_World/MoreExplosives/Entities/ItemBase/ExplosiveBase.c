@@ -947,10 +947,17 @@ class MOE_ExplosiveBase : ItemBase
 	{
 		super.SetActions();
 		
+		RemoveAction(ActionTakeItemToHands);
+		
 		//Arming, Disarming & Defusing
 		AddAction(MOE_ActionManipulateExplosive);					//In world
 		AddAction(MOE_ActionManipulateExplosiveInHands);			//In hands - unarmed 
 		AddAction(MOE_ActionManipulateExplosiveInHandsWithTool);	//In hands - with tool		
+		
+		//Placement 
+		AddAction(MOE_ActionMountExplosive);
+		AddAction(MOE_ActionDismountExplosive);
+		AddAction(MOE_ActionToggleExplosivePlacement);
 	
 		//Timer
 		AddAction(MOE_ActionManipulateTimer);
@@ -958,12 +965,7 @@ class MOE_ExplosiveBase : ItemBase
 		AddAction(MOE_ActionOpenTriggerComponentUI);
 		AddAction(MOE_ActionOpenTriggerComponentUIInHands);
 		
-		//Placement 
-		AddAction(MOE_ActionMountExplosive);
-		AddAction(MOE_ActionDismountExplosive);
-		AddAction(MOE_ActionToggleExplosivePlacement);
 		
-		RemoveAction(ActionTakeItemToHands);
 	}
 	
 	override bool NameOverride(out string output)
