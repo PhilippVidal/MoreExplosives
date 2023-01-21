@@ -62,7 +62,7 @@ class MOE_ActionConvertItem : ActionContinuousBase
 		MOE_DetonatorBase detonator;	
 		if(CastTo(detonator, item))
 		{
-			return detonator.CanBeConvertedToItem();
+			return detonator.CanBeConvertedToItem() && !detonator.GetConnectionCount();
 		}
 
 		return false;
