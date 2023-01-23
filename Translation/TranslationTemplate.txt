@@ -1,0 +1,64 @@
+Trigger device
+Homemade Explosive
+A homemade explosive charge that can be used to raid bases.
+Military C4
+A military-grade C4-Charge.
+Homemade Detonator
+A homemade detonator made from a broken transmitter.
+Military Detonator
+A device used to remotely detonate explosives.
+Homemade Receiver
+A homemade signal receiver made from a broken transmitter.
+Military Receiver
+A military-grade signal receiver used to detonate explosives.
+Homemade Timer
+A homemade timer made from several electrical components. Can be used with an explosive to create a timed-charge.
+Military Timer
+A military-grade timer that can be used to create a timed-charge.
+Gunpowder
+A bottle filled with gunpowder. Can be used to craft a homemade explosive.
+Sulfurpowder
+A bottle filled with sulfurpowder. Can be used to craft gunpowder.
+Charcoalpowder
+A bottle filled with charcoalpowder. Can be used to craft gunpowder.
+Stick of C4
+A stick of C4-Explosive.
+Convert to
+Configure trigger
+Start Timer
+Stop Timer
+Connect
+Disconnect
+Trigger
+Switch to next mode
+Switch to next explosive
+Arm explosive
+Disarm explosive
+Defuse explosive
+Mount explosive
+Dismount explosive
+Craft
+ARMED								//used in display name "Homemade Explosive [ARMED]"
+MOUNTED							//used in display name "Homemade Explosive [MOUNTED]"
+Can explode once combined with a trigger and armed.
+Time to arm
+Time to disarm
+Time to defuse
+Time to mount
+Time to dismount
+Has to be mounted 					//used in description -> "Has to be mounted: Yes/No"
+Max. Range
+Max. Connected Receivers
+Connectable Receivers
+Yes
+No
+Arm Tools
+Disarm Tools
+Defuse Tools
+Unarmed
+Time
+Min. Time
+Max. Time
+Max. Connected Sources
+Can be connected to when armed 		//used in description -> "Can be connected to when armed: Yes/No"
+Currently in raiding schedule			//used in description -> "Currently in raiding schedule: Yes/No"
