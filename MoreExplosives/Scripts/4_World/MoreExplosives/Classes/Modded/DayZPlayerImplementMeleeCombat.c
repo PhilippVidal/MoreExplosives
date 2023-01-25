@@ -1,4 +1,4 @@
-//Potential fix for players being able to punch/hit a placed explosive and clip their head through a base wall
+//Potential fix for players being able to punch/hit a mounted explosive and clip their head through a base wall
 modded class DayZPlayerImplementMeleeCombat
 {
 	override void Init(DayZPlayerImplement player)
