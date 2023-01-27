@@ -1,13 +1,14 @@
 class CfgPatches
 {
-    //Change this to your server's name 
+    //Change this to a fitting name (e.g., BestDayZServerEver_MOEConfig),
+    //the naming here doesn't really matter at all as long as it does not conflict with other mods
     class ServerName_MOEConfigTemplate
     {
         units[]={};
         weapons[]={};
         requiredVersion=0.1;
         requiredAddons[] = {
-			"MoreExplosives_Config"
+		"MoreExplosives_Config"
         };
     };
 };
