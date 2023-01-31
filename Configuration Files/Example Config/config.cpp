@@ -48,7 +48,7 @@ class CfgAmmo
 			fullDamageRange = 7;
 		};
 	};
-}
+};
 
 class CfgVehicles
 {
