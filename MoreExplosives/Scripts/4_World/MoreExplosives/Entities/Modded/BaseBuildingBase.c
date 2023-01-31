@@ -76,7 +76,7 @@ modded class BaseBuildingBase
 			return true;
 		}
 		
-		if(explosive.CanOnlyRaidDoors() && !HasGate_MOE())
+		if((GetMOE().IsDoorRaidOnlyEnabled() || explosive.CanOnlyRaidDoors()) && !HasGate_MOE())
 		{
 			return false;		
 		}
