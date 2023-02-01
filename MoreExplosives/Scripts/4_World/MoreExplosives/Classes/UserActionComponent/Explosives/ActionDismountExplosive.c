@@ -27,7 +27,7 @@ class MOE_ActionDismountExplosive : ActionContinuousBase
 	
 	override void CreateConditionComponents()  
 	{	
-		m_ConditionTarget = new CCTNonRuined(MOE_Constants.DISTANCE_MANIPULATE_EXPLOSIVE);
+		m_ConditionTarget = new CCTCursorNoRuinCheck(MOE_Constants.DISTANCE_MANIPULATE_EXPLOSIVE);
 		m_ConditionItem = new CCINone();		
 	}
 	

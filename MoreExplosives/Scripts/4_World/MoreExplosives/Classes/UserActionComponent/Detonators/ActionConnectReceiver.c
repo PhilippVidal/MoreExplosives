@@ -23,7 +23,7 @@ class MOE_ActionConnectReceiver : ActionContinuousBase
 	
 	override void CreateConditionComponents() 
 	{
-		m_ConditionTarget 	= new CCTNonRuined(MOE_Constants.DISTANCE_MANIPULATE_EXPLOSIVE);
+		m_ConditionTarget 	= new CCTCursor(MOE_Constants.DISTANCE_MANIPULATE_EXPLOSIVE);
 		m_ConditionItem 	= new CCINonRuined();
 	}
 	

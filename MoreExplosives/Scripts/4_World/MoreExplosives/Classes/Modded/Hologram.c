@@ -2,6 +2,7 @@
 modded class Hologram 
 {
 	protected bool m_RaycastHit_MOE;
+	
 	override void UpdateHologram(float timeslice)
 	{
 		m_RaycastHit_MOE = false;		
