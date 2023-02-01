@@ -62,3 +62,4 @@ Max. Time
 Max. Connected Sources
 Can be connected to when armed 		//used in description -> "Can be connected to when armed: Yes/No"
 Currently in raiding schedule			//used in description -> "Currently in raiding schedule: Yes/No"
+Can only raid doors               //used in description -> "Can only raid doors: Yes/No"
