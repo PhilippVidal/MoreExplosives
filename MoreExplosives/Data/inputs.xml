@@ -2,7 +2,7 @@
 <modded_inputs>
 	<inputs>
 		<actions>
-			<input name="UADetonatorCycleMode" loc="moe_settings_detonatorcyclemode"/>
+			<input name="UADetonatorCycleMode" loc="Cycle Detonator Mode"/>
 		</actions>
 		<sorting name="MOE" loc="MOE">
 			<input name="UADetonatorCycleMode"/>
