@@ -996,37 +996,26 @@ class MOE_ExplosiveBase : ItemBase
 		
 		if(GetMOE().IsRaidSchedulingEnabled())
 		{
-			string inRaidSchedule; 
-			if(GetMOE().IsInRaidSchedule())
-			{
-				inRaidSchedule = "#STR_MOE_Yes";
-			}
-			else 
-			{
-				inRaidSchedule = "#STR_MOE_No";
-			}
-			
-			output += string.Format("\n%1: %2", "#STR_MOE_Raiding_Allowed_Schedule", inRaidSchedule);
+			output += string.Format("\n%1: %2", "#STR_MOE_Raiding_Allowed_Schedule", MoreExplosives.GetYesNo(GetMOE().IsInRaidSchedule()));
 		}
+		
+		if(explosiveData.CanOnlyRaidDoors || GetMOE().IsDoorRaidOnlyEnabled())
+		{
+			output += string.Format("\n%1: %2", "#STR_MOE_Explosive_CanOnlyRaidDoors", "#STR_MOE_Yes");
+		}
+		
+		if(explosiveData.HasToBeMounted)
+		{
+			output += string.Format("\n%1: %2", "#STR_MOE_Explosive_HasToBeMounted", "#STR_MOE_Yes");
+		}
+
 			
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToArm", explosiveData.TimeToArm);
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToDisarm", explosiveData.TimeToDisarm);
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToDefuse", explosiveData.TimeToDefuse);
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToMount", explosiveData.TimeToMount);
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToDismount", explosiveData.TimeToDismount);
-		
-		string hasToBeMounted; 
-		if(explosiveData.HasToBeMounted)
-		{
-			hasToBeMounted = "#STR_MOE_Yes";
-		}
-		else 
-		{
-			hasToBeMounted = "#STR_MOE_No";
-		}
-		
-		output += string.Format("\n%1: %2", "#STR_MOE_Explosive_HasToBeMounted", hasToBeMounted);
-		
+	
 	
 		array<string> tools = explosiveData.ArmTools;
 		int toolCount = tools.Count();

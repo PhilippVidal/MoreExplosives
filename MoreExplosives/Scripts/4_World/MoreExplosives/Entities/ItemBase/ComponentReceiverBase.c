@@ -222,19 +222,8 @@ class MOE_ComponentReceiverBase : MOE_ComponentTriggerBase
 		
 		MOE_ConfigDataReceiver receiverData = GetConfigData_Receiver();
 		
-		output += string.Format("\n%1:\t%2", "#STR_MOE_Receiver_MaxConnectedSources", receiverData.MaxConnectedSignalSources);
-		
-		string canBeConnectedToWhenArmed; 
-		if(receiverData.CanBeConnectedToWhenExplosiveArmed)
-		{
-			canBeConnectedToWhenArmed = "#STR_MOE_Yes";
-		}
-		else 
-		{
-			canBeConnectedToWhenArmed = "#STR_MOE_No";
-		}
-		
-		output += string.Format("\n%1: %2", "#STR_MOE_Receiver_CanBeConnectedToWhenArmed", canBeConnectedToWhenArmed);
+		output += string.Format("\n%1:\t%2", "#STR_MOE_Receiver_MaxConnectedSources", receiverData.MaxConnectedSignalSources);		
+		output += string.Format("\n%1: %2", "#STR_MOE_Receiver_CanBeConnectedToWhenArmed", MoreExplosives.GetYesNo(receiverData.CanBeConnectedToWhenExplosiveArmed));
 		
 		return true;
 	}

@@ -931,6 +931,13 @@ class MoreExplosives
 		
 		return str;
 	}
+	
+	static string GetYesNo(bool value)
+	{
+		if(value) return "#STR_MOE_Yes";
+		
+		return "#STR_MOE_No";
+	}
 
 /*	
 	void Debug_PrintCachedEntityData()
