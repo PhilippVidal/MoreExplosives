@@ -1,3 +1,5 @@
+#include "\MoreExplosives\Defines\Defines.c"
+
 class CfgPatches
 {
     class MoreExplosives_Scripts
@@ -25,8 +27,8 @@ class CfgMods
 		name = "More Explosives";
 		credits = "Handsome Nipple";
 		author = "Handsome Nipple";
-		authorID = "0"; 
-		version = "0.1"; 
+		authorID = "76561198015756989"; 
+		version = "1.1"; 
 		extra = 0;
 		type = "mod";
 		
@@ -42,24 +44,24 @@ class CfgMods
 			{
 				value = "";
 				files[] = {
-					"MoreExplosives/Scripts/3_Game",
-					"MoreExplosives/Scripts/Common"
+					"MoreExplosives/Defines",
+					"MoreExplosives/Scripts/3_Game"
 				};
 			};
 			class worldScriptModule
 			{
 				value = "";
 				files[] = {
-					"MoreExplosives/Scripts/4_World",
-					"MoreExplosives/Scripts/Common"
+					"MoreExplosives/Defines",
+					"MoreExplosives/Scripts/4_World"
 				};
 			};
 			class missionScriptModule
 			{
 				value = "";
 				files[] = {
-					"MoreExplosives/Scripts/5_Mission",
-					"MoreExplosives/Scripts/Common"
+					"MoreExplosives/Defines",
+					"MoreExplosives/Scripts/5_Mission"
 				};
 			};
 		};
