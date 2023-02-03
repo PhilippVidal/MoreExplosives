@@ -196,37 +196,11 @@ class CfgVehicles
 		ammoType = "MOE_Ammo_ExplosionHomemade";
 
 		class MOE_Settings
-		{		
-			timeToArm = 15;
-			timetoDisarm = 15;
-			timeToDefuse = 20;
-			timeToMount = 20;
-			timeToDismount = 20;
-
-			explodeOnRuinedChance = 0.0;
-			ruinAttachmentsOnRuinedChance = 1.0;
-
-			hasToBeMounted = 0;
-			canTakeDamageWhileMounted = 0;
-			canTakeDamageWhileArmed = 0;
-			canOnlyRaidDoors = 0;
-			
-			explosionBehaviour = "MOE_SingleExplosion";
-
+		{					
 			attachableTriggers[] = {
 				"MOE_Timer_Homemade",
 				"MOE_Receiver_Homemade"
 			};		
-
-			armTools[] = {
-				"Unarmed"
-			};
-			disarmTools[] = {
-				"Unarmed"
-			};
-			defuseTools[] = {
-				"Unarmed"
-			};	
 		};
     };
 
@@ -236,38 +210,10 @@ class CfgVehicles
 
 		class MOE_Settings
 		{		
-			timeToArm = 15;
-			timetoDisarm = 15;
-			timeToDefuse = 20;
-			timeToMount = 20;
-			timeToDismount = 20;
-
-			explodeOnRuinedChance = 0;
-			ruinAttachmentsOnRuinedChance = 1.0;
-
-			hasToBeMounted = 0;
-			canTakeDamageWhileMounted = 0;
-			canTakeDamageWhileArmed = 0;
-			canOnlyRaidDoors = 0;
-
-			explosionBehaviour = "MOE_SingleExplosion";
-
 			attachableTriggers[] = {
 				"MOE_Timer_Military",
 				"MOE_Receiver_Military"
 			};
-
-			armTools[] = {
-				"Unarmed"
-			};
-
-			disarmTools[] = {
-				"Unarmed"
-			};
-
-			defuseTools[] = {
-				"Unarmed"
-			};	
 		};
     };
 
@@ -301,6 +247,7 @@ class CfgVehicles
 		{		
 			maxConnectedReceivers = 5;
 			maxRange = 12000;
+			
 			connectableReceivers[] = {
 				"MOE_Receiver_Military"
 			};
@@ -321,7 +268,6 @@ class CfgVehicles
 		class MOE_Settings
 		{
 			maxConnectedSignalSources = 3;
-			canBeConnectedToWhenExplosiveArmed = 1;
 
 			class Light 
 			{
@@ -340,7 +286,6 @@ class CfgVehicles
 		class MOE_Settings
 		{
 			maxConnectedSignalSources = 5;
-			canBeConnectedToWhenExplosiveArmed = 1;
 
 			class Light 
 			{
@@ -366,26 +311,6 @@ class CfgVehicles
 			minTimer = 30;
 			maxTimer = 300;
 			initialTickrate = 2;
-			tickSpeedIncreaseFactor = 2;
-			timerStages[] = {
-				0.5,						
-				0.75,	
-				0.875	
-			};
-
-			beepingSoundset = "MOE_SoundSet_Beeping";
-
-			class Light 
-			{
-				colors[] = {
-					0, 1, 0,
-					1, 1, 0,
-					1, 0, 0
-				};
-
-				radius = 2;
-				brightness = 3;
-			};
 
 			class Noise
 			{			
@@ -402,26 +327,6 @@ class CfgVehicles
 			minTimer = 30;
 			maxTimer = 300;
 			initialTickrate = 1.5;
-			tickSpeedIncreaseFactor = 2;
-			timerStages[] = {
-				0.5,						
-				0.75,	
-				0.875	
-			};
-
-			beepingSoundset = "MOE_SoundSet_Beeping";
-
-			class Light 
-			{
-				colors[] = {
-					0, 1, 0,
-					1, 1, 0,
-					1, 0, 0
-				};
-
-				radius = 2;
-				brightness = 3;
-			};
 
 			class Noise
 			{			

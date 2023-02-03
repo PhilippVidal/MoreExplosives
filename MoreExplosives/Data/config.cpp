@@ -58,11 +58,11 @@ class CfgVehicles
 		class MOE_Settings
 		{		
 			//Times to manipulate the explosive in various ways (in seconds)
-			timeToArm = 1;
-			timetoDisarm = 1;
-			timeToDefuse = 1;
-			timeToMount = 1;
-			timeToDismount = 1;
+			timeToArm = 15;
+			timetoDisarm = 15;
+			timeToDefuse = 20;
+			timeToMount = 20;
+			timeToDismount = 20;
 
 			//How likely is the explosive to explode when it becomes ruined? (0 - 1)
 			explodeOnRuinedChance = 0;
@@ -70,11 +70,25 @@ class CfgVehicles
 			//How likely are the attachments to become ruined when the explosive becomes ruined? (0 - 1)
 			//Is only relevant for when the explosive is getting ruined by something other than it exploding, 
 			//as exploding also deletes the explosive afterwards 
-			ruinAttachmentsOnRuinedChance = 0;
+			ruinAttachmentsOnRuinedChance = 1.0;
 
 			//Does the explosive have to be mounted to be able to explode? (0 or 1)
 			hasToBeMounted = 0;
+			
+			//On what objects can this explosive be mounted?
+			//0 = Everywhere (no restrictions)
+			//1 = Base building objects only
+			//2 = Selected only 
+			//	--> Objects have to be whitelisted through their config entry
+			mountingMode = 0;
 
+			//Can this explosive only be mounted during a set raid schedule? 
+			//(if raid scheduling is active)
+			canOnlyMountDuringSchedule = 0;
+			
+			//Can this explosive only deal damage to the object it has been placed on?
+			canOnlyDamagePlacementTarget = 0;
+			
 			//Can the explosive take damage while mounted? 
 			canTakeDamageWhileMounted = 0;
 
@@ -92,9 +106,17 @@ class CfgVehicles
 			
 			//Which tools can be used to manipulate (Arm, Disarm, Defuse) the explosive? 
 			//Use "Unarmed" for manipulation without any tools
-			armTools[] = {};
-			disarmTools[] = {};
-			defuseTools[] = {};
+			armTools[] = {
+				"Unarmed"
+			};
+			
+			disarmTools[] = {
+				"Unarmed"
+			};
+			
+			defuseTools[] = {
+				"Unarmed"
+			};		
 		};
     };
 
@@ -221,8 +243,8 @@ class CfgVehicles
 					1, 0, 0
 				};
 
-				radius = 3;
-				brightness = 2;
+				radius = 2;
+				brightness = 3;
 			};
 
 			//NoiseParams for A.I.
