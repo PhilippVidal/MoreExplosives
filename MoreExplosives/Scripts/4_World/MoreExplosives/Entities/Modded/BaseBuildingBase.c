@@ -76,6 +76,11 @@ modded class BaseBuildingBase
 			return true;
 		}
 		
+		if(explosive.CanOnlyDamagePlacementTarget() && (this != explosive.GetPlacementTarget()))
+		{
+			return false;
+		}
+		
 		if((GetMOE().IsDoorRaidOnlyEnabled() || explosive.CanOnlyRaidDoors()) && !HasGate_MOE())
 		{
 			return false;		

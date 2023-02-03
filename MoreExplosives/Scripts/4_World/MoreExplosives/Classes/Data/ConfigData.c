@@ -118,6 +118,10 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 	bool CanTakeDamageWhileMounted;
 	bool CanTakeDamageWhileArmed;
 	bool CanOnlyRaidDoors;
+	bool CanOnlyDamagePlacementTarget; 
+	bool CanOnlyMountDuringSchedule;
+	
+	int MountingMode; //0 = Everywhere, 1 = Only on Base Building Objects, 2 = Only on selected objects
 	
 	string AmmoType;
 	string ExplosionBehaviourType;
@@ -145,11 +149,15 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 		ExplodeOnRuinedChance 			= 0;			
 		RuinAttachmentsOnRuinedChance 	= 0;	
 		
-		HasToBeMounted 				= false;
-		CanTakeDamageWhileMounted 	= false;
-		CanTakeDamageWhileArmed	 	= true;
-		CanOnlyRaidDoors = false;
-			
+		HasToBeMounted 					= false;
+		CanTakeDamageWhileMounted 		= false;
+		CanTakeDamageWhileArmed	 		= true;
+		CanOnlyRaidDoors 				= false;
+		CanOnlyDamagePlacementTarget 	= false;
+		CanOnlyMountDuringSchedule		= false;
+		
+		MountingMode = MOE_EExplosiveMountingModes.EVERYWHERE;
+		
 		AmmoType 				= "Explosion_NonLethal";
 		ExplosionBehaviourType 	= "MOE_ExplosionBehaviourBasic";
 		
@@ -195,7 +203,17 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 			
 		path = basePath + "canOnlyRaidDoors";
 		if(GetGame().ConfigIsExisting(path)) CanOnlyRaidDoors = GetGame().ConfigGetInt(path) != 0;
-			
+		
+		path = basePath + "canOnlyDamagePlacementTarget";
+		if(GetGame().ConfigIsExisting(path)) CanOnlyDamagePlacementTarget = GetGame().ConfigGetInt(path) != 0;	
+
+		path = basePath + "canOnlyMountDuringSchedule";
+		if(GetGame().ConfigIsExisting(path)) CanOnlyMountDuringSchedule = GetGame().ConfigGetInt(path) != 0;		
+		
+		
+		path = basePath + "mountingMode";
+		if(GetGame().ConfigIsExisting(path)) MountingMode = GetGame().ConfigGetInt(path);
+				
 		
 		path = basePath + "explosionBehaviour";
 		if(GetGame().ConfigIsExisting(path)) ExplosionBehaviourType = GetGame().ConfigGetTextOut(path);	

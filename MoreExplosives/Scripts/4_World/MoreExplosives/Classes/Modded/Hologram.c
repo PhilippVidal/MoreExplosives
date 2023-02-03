@@ -2,10 +2,12 @@
 modded class Hologram 
 {
 	protected bool m_RaycastHit_MOE;
+	protected Object m_PlacementTarget_MOE;
 	
 	override void UpdateHologram(float timeslice)
 	{
 		m_RaycastHit_MOE = false;		
+		m_PlacementTarget_MOE = null;
 		if(m_Projection.IsInherited(MOE_ExplosiveBase))
 		{
 			UpdateExplosiveHologram_MOE(timeslice);
@@ -21,15 +23,14 @@ modded class Hologram
 		return m_RaycastHit_MOE;
 	}
 	
-	protected void UpdateExplosiveHologram_MOE(float timeslice)
+	Object GetPlacementTarget_MOE()
 	{
-		if (!m_Parent)
-		{
-			m_Player.TogglePlacingLocal();		
-			return;
-		}
-		
-		if (m_Player.IsSwimming() || m_Player.IsClimbingLadder() || m_Player.IsRaised() || m_Player.IsClimbing() || m_Player.IsRestrained() || m_Player.IsUnconscious())
+		return m_PlacementTarget_MOE;
+	}
+	
+	protected void UpdateExplosiveHologram_MOE(float timeslice)
+	{		
+		if (!m_Parent || m_Player.IsSwimming() || m_Player.IsClimbingLadder() || m_Player.IsRaised() || m_Player.IsClimbing() || m_Player.IsRestrained() || m_Player.IsUnconscious())
 		{
 			m_Player.TogglePlacingLocal();		
 			return;
@@ -42,9 +43,8 @@ modded class Hologram
 
 		vector position, normal;
 		float hitFraction;
-		Object hitObject;
 		
-		m_RaycastHit_MOE = DoPlacementRaycast_MOE(m_Player, position, normal, hitFraction, hitObject);
+		m_RaycastHit_MOE = DoPlacementRaycast_MOE(m_Player, position, normal, hitFraction, m_PlacementTarget_MOE);
 		
 		MOE_ExplosiveBase explosive = MOE_ExplosiveBase.Cast(m_Projection); 
 		

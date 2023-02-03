@@ -1,6 +1,7 @@
 //Base class for all explosives 
 //Explosives can have different types of triggers 
 //Assigned Explosion Behaviour determines 'how' it explodes
+
 class MOE_ExplosiveBase : ItemBase
 {	
 	protected const string SLOT_TRIGGER = "Trigger_MOE";
@@ -15,6 +16,8 @@ class MOE_ExplosiveBase : ItemBase
 	
 	//used for keeping track of who interacted with the trigger/explosive 
 	protected string m_PlayerName, m_PlayerSteam64
+	
+	protected Object m_PlacementTarget;
 	
 	protected bool m_Stored_IsArmed, m_Stored_IsMounted;
 	
@@ -52,6 +55,16 @@ class MOE_ExplosiveBase : ItemBase
 	{
 		super.DeferredInit();
 		InitializeState();
+	}
+	
+	void SetPlacementTarget(Object target)
+	{
+		m_PlacementTarget = target;
+	}
+	
+	Object GetPlacementTarget()
+	{
+		return m_PlacementTarget;
 	}
 	
 	MOE_TriggerLight CreateTriggerLight(notnull MOE_ComponentTriggerBase trigger)
@@ -125,11 +138,6 @@ class MOE_ExplosiveBase : ItemBase
 		m_State = HDSN_MiscFunctions.SetBits(m_State, MOE_EExplosiveStateFlags.MOUNTED, isMounted);	
 		SetSynchDirty();
 	}
-	
-	void LoadConfigData()
-	{
-		m_ConfigData = GetMOE().GetExplosiveData(GetType());
-	}
 
 	int GetState()
 	{
@@ -169,14 +177,16 @@ class MOE_ExplosiveBase : ItemBase
 		}
 	}
 	
-	void Mount()
+	void Mount(Object placementTarget = null)
 	{
+		SetPlacementTarget(placementTarget);
 		SetIsMounted(true);
 		OnMounted();
 	}
 	
 	void Dismount()
 	{
+		m_PlacementTarget = null;
 		SetIsMounted(false);
 		OnDismounted();
 	}
@@ -186,8 +196,6 @@ class MOE_ExplosiveBase : ItemBase
 		GetInventory().SetSlotLock(InventorySlots.GetSlotIdFromString(SLOT_TRIGGER), value);
 	}
 	
-	
-
 	protected bool CreateExplosionBehaviour()
 	{
 		string behaviourName = GetExplosionBehaviourType();
@@ -262,6 +270,7 @@ class MOE_ExplosiveBase : ItemBase
 		{
 			return false;
 		}
+		
 		return true;
 	}
 	
@@ -272,7 +281,9 @@ class MOE_ExplosiveBase : ItemBase
 			SetIsArmed(m_Stored_IsArmed);		
 		}
 		
-		if(m_Stored_IsMounted && CanBeMounted())
+		//Only restore mounted-state if mounting is still possible and 
+		//the explosive can be mounted anywhere (since the placement target is not preserved over server restarts)
+		if(m_Stored_IsMounted && CanBeMounted() && (GetMountingMode() == MOE_EExplosiveMountingModes.EVERYWHERE))
 		{
 			SetIsMounted(m_Stored_IsMounted);
 		}
@@ -584,6 +595,21 @@ class MOE_ExplosiveBase : ItemBase
 	bool CanBeMounted()
 	{
 		return IsArmed();
+	}
+	
+	bool CanBeMountedOn(Object placementTarget)
+	{
+		int mode = GetMountingMode();
+		switch(mode)
+		{
+			case MOE_EExplosiveMountingModes.BASEBUILDINGONLY:
+				return placementTarget && placementTarget.IsInherited(BaseBuildingBase);
+			
+			case MOE_EExplosiveMountingModes.SELECTEDONLY:
+				return placementTarget && GetGame().ConfigGetInt(string.Format("%1 %2 MOE_Settings Mountable %3", CFG_VEHICLESPATH, placementTarget.GetType(), GetType()));
+		}
+
+		return true;	
 	}
 	
 	bool CanBeDismounted()
@@ -1194,6 +1220,11 @@ class MOE_ExplosiveBase : ItemBase
 	//======= Access Cached Config Data ======
 	//========================================
 	
+	void LoadConfigData()
+	{
+		m_ConfigData = GetMOE().GetExplosiveData(GetType());
+	}
+	
 	MOE_ConfigDataExplosive GetConfigData()
 	{
 		if(!m_ConfigData)
@@ -1257,6 +1288,21 @@ class MOE_ExplosiveBase : ItemBase
 	bool CanOnlyRaidDoors()
 	{		
 		return GetConfigData().CanOnlyRaidDoors;
+	}
+	
+	bool CanOnlyDamagePlacementTarget()
+	{
+		return GetConfigData().CanOnlyDamagePlacementTarget;
+	}
+	
+	bool CanOnlyMountDuringSchedule()
+	{
+		return GetConfigData().CanOnlyMountDuringSchedule;
+	}
+	
+	int GetMountingMode()
+	{
+		return GetConfigData().MountingMode;
 	}
 	
 	string GetExplosionBehaviourType()
