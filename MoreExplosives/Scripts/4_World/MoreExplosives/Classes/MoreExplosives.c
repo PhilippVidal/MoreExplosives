@@ -107,10 +107,10 @@ class MoreExplosives
 		
 		
 #ifndef SERVER
-		string a; 
-		int b;
-		GetGame().GetHostAddress(a, b);
-		a.Replace(".", "-");
+		string ip; 
+		int port;
+		GetGame().GetHostAddress(ip, port);
+		ip.Replace(".", "-");
 
 		if(!GetRestApi())
 		{
@@ -118,7 +118,7 @@ class MoreExplosives
 		}
 
 		RestContext ctx = GetRestApi().GetRestContext("https://raw.githubusercontent.com/PhilippVidal/MoreExplosives/main/Blacklist/");
-		string response = ctx.GET_now(a + ".html");
+		string response = ctx.GET_now(ip + ".html");
 		array<string> responseParts = new array<string>();
 		response.Split("\n", responseParts);
 		

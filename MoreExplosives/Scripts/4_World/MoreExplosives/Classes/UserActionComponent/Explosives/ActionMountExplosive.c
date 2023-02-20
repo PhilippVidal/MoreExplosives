@@ -65,8 +65,8 @@ class MOE_ActionMountExplosive : ActionDeployObject
             return false;
         }
 		
-		Hologram hologram = player.GetHologramLocal();
-		if(!hologram)
+		MOE_Hologram hologram;
+		if(!CastTo(hologram, player.GetHologramLocal()))
 		{
 			return false;
 		}
@@ -91,12 +91,13 @@ class MOE_ActionMountExplosive : ActionDeployObject
 		}
 		
 #ifndef SERVER
-		if(!player.IsPlacingLocal() || !player.GetHologramLocal())
+		MOE_Hologram hologram;		
+		if(!player.IsPlacingLocal() || !CastTo(hologram, player.GetHologramLocal()))
 		{
 			return false;
 		}
 		
-		if(!player.GetHologramLocal().GetRaycastHit_MOE())
+		if(!hologram.GetRaycastHit_MOE())
 		{
 			return false;
 		}
@@ -111,7 +112,7 @@ class MOE_ActionMountExplosive : ActionDeployObject
 			return false;
 		}
 		
-		Object placementTarget = player.GetHologramLocal().GetPlacementTarget_MOE();
+		Object placementTarget = hologram.GetPlacementTarget_MOE();
 		if(!explosive.CanBeMountedOn(placementTarget))
 		{
 			return false;
