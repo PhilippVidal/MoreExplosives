@@ -35,10 +35,10 @@ modded class Hologram
 			return;
 		}
 
-		if (!GetUpdatePosition())
-		{
-			return;
-		} 
+		//if (!GetUpdatePosition())
+		//{
+		//	return;
+		//} 
 
 		vector position, normal;
 		float hitFraction;
