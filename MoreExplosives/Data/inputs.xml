@@ -10,7 +10,7 @@
 	</inputs>
 	<preset>		
 		<input name="UADetonatorCycleMode">
-			<btn name="kB" />
+			<btn name="kX" />
 		</input>			
 	</preset>
 </modded_inputs>
