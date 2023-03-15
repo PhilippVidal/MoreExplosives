@@ -541,7 +541,7 @@ class CfgVehicles
 		};
 
 		repairableWithKits[]={7};
-		repairCosts[]={50};
+		repairCosts[]={20};
 		soundImpactType="plastic";
 
 		class EnergyManager
@@ -643,7 +643,7 @@ class CfgVehicles
 		};
 
 		repairableWithKits[]={7};
-		repairCosts[]={50};
+		repairCosts[]={30};
 		soundImpactType="plastic";
 
 		class EnergyManager
@@ -798,6 +798,8 @@ class CfgVehicles
 		rotationFlags=1;
 		itemSize[]={1,2};
 		itemBehaviour=1;
+		repairableWithKits[]={7};
+        repairCosts[]={20};
 
 		class AnimationSources
 		{
@@ -881,6 +883,8 @@ class CfgVehicles
 		rotationFlags=16;
 		itemSize[]={1,2};
 		itemBehaviour=1;
+		repairableWithKits[]={7};
+        repairCosts[]={30};
 
 		class MOE_Settings
 		{
@@ -977,6 +981,8 @@ class CfgVehicles
 		weight=690;
 		rotationFlags=1;
 		itemSize[]={2,2};
+		repairableWithKits[]={7};
+        repairCosts[]={20};
 
 		class DamageSystem
 		{
@@ -1042,6 +1048,8 @@ class CfgVehicles
 		weight=450;
 		rotationFlags=16;
 		itemSize[]={1,2};
+		repairableWithKits[]={7};
+        repairCosts[]={30};
 
 		class DamageSystem
 		{
