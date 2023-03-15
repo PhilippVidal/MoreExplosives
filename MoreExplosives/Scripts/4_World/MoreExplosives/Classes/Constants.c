@@ -8,7 +8,7 @@ class MOE_Constants
 	
 
 	const float DISTANCE_MANIPULATE_EXPLOSIVE = 2;
-	const float DISTANCE_MOUNT_EXPLOSIVE = 1;
+	const float DISTANCE_MOUNT_EXPLOSIVE = 1.5;
 	
 	const float TIMER_SPAM_DELAY = 1;
 	const float TIMER_MIN_TICKRATE = 0.1;	//in seconds
