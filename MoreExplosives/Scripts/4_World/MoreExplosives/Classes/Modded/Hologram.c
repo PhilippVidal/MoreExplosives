@@ -75,10 +75,15 @@ modded class Hologram
 		m_Projection.OnHologramBeingPlaced(m_Player);
 	}
 	
+	protected float GetRaycastDistance_MOE()
+	{
+		return MOE_Constants.DISTANCE_MOUNT_EXPLOSIVE;
+	}
+	
 	protected bool DoPlacementRaycast_MOE(notnull PlayerBase player, out vector hitPosition, out vector hitNormal, out float hitFraction, out Object hitObject, Object ignore = null)
 	{
 		
-		float maxProjectionDistance = MOE_Constants.DISTANCE_MOUNT_EXPLOSIVE;
+		float maxProjectionDistance = GetRaycastDistance_MOE();
 		vector from, to; 
 		MiscGameplayFunctions.GetHeadBonePos(player, from);
 		vector camDirection = GetGame().GetCurrentCameraDirection();

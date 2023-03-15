@@ -6,7 +6,7 @@ class MOE_ActionTriggerSignal : ActionSingleUseBase
 	{
 		m_CommandUID        = DayZPlayerConstants.CMD_ACTIONMOD_PRESS_TRIGGER;
 		m_CommandUIDProne 	= DayZPlayerConstants.CMD_ACTIONFB_PRESS_TRIGGER;
-		m_Text 			= "#STR_MOE_Trigger_Detonator";
+		m_Text 				= "#STR_MOE_Trigger_Detonator";
 	}
 	
 	override void CreateConditionComponents()
