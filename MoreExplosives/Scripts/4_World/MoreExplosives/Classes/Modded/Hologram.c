@@ -88,23 +88,12 @@ modded class Hologram
 		MiscGameplayFunctions.GetHeadBonePos(player, from);
 		vector camDirection = GetGame().GetCurrentCameraDirection();
 		
-		//A-S-S => law of sines
 		if(DayZPlayerCamera3rdPerson.Cast(player.GetCurrentCamera()))
 		{	
-			float a, b, c; 					//Triangle sides
-			float a_A, a_B, a_C, sin_a_B; 	//Triangle angles
 			vector camPosition = GetGame().GetCurrentCameraPosition();	
-			vector camToHead = from - camPosition;	
-			
-			a = maxProjectionDistance; 	
-			b = camToHead.Length();
-			a_A = HDSN_Math.AngleBetweenVectorsRAD(camToHead.Normalized(), camDirection);
-			sin_a_B = (b * Math.Sin(a_A)) / a;
-			a_B = Math.Asin(sin_a_B);		
-			a_C = Math.PI - a_A - a_B;		
-			c = (b / sin_a_B) * Math.Sin(a_C);
-	
-			to = from + ((camPosition + camDirection * c) - from);	
+			vector camToHead = from - camPosition;
+			float projectedLength = vector.Dot(camToHead, camDirection); 
+			to = (projectedLength + maxProjectionDistance) * camDirection + camPosition;
 		}
 		else 
 		{
