@@ -84,6 +84,18 @@ class CfgVehicles
 			//Can the explosive only deal damage to objects that have a door-like part?
 			canOnlyRaidDoors = 0;
 			
+			//Can the explosive only damage the object it has been placed on? 
+			canOnlyDamagePlacementTarget = 0;
+			
+			//Can the explosive only be placed during an active raid scheduling slot? 
+			canOnlyMountDuringSchedule = 0;
+			
+			//What mounting mode should be used for this explosive? (see MOE_EExplosiveMountingModes enum)
+			//0 = Everywhere (i.e., no restrictions)
+			//1 = Only on Base Building Objects, 
+			//2 = Only on selected objects
+			mountingMode = 0;
+			
 			//Which explosion behaviour does this explosive use?
 			explosionBehaviour = "MOE_SingleExplosion";
 

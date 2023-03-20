@@ -1,10 +1,12 @@
 class MOE_Hologram : Hologram
 {
 	protected bool m_RaycastHit_MOE;
+	protected Object m_PlacementTarget_MOE;
 	
 	override void UpdateHologram(float timeslice)
 	{
-		m_RaycastHit_MOE = false;		
+		m_RaycastHit_MOE = false;	
+		m_PlacementTarget_MOE = null;	
 		if(m_Projection.IsInherited(MOE_ExplosiveBase))
 		{
 			UpdateExplosiveHologram_MOE(timeslice);
@@ -12,12 +14,6 @@ class MOE_Hologram : Hologram
 		}
 		
 		super.UpdateHologram(timeslice);
-	}
-	
-	
-	bool GetRaycastHit_MOE()
-	{
-		return m_RaycastHit_MOE;
 	}
 	
 	protected void UpdateExplosiveHologram_MOE(float timeslice)
@@ -41,9 +37,8 @@ class MOE_Hologram : Hologram
 
 		vector position, normal;
 		float hitFraction;
-		Object hitObject;
 		
-		m_RaycastHit_MOE = DoPlacementRaycast_MOE(m_Player, position, normal, hitFraction, hitObject);
+		m_RaycastHit_MOE = DoPlacementRaycast_MOE(m_Player, position, normal, hitFraction, m_PlacementTarget_MOE);
 		
 		MOE_ExplosiveBase explosive = MOE_ExplosiveBase.Cast(m_Projection); 
 		
@@ -73,12 +68,7 @@ class MOE_Hologram : Hologram
 
 		m_Projection.OnHologramBeingPlaced(m_Player);
 	}
-	
-	protected float GetRaycastDistance_MOE()
-	{
-		return MOE_Constants.DISTANCE_MOUNT_EXPLOSIVE;
-	}
-	
+		
 	protected bool DoPlacementRaycast_MOE(notnull PlayerBase player, out vector hitPosition, out vector hitNormal, out float hitFraction, out Object hitObject, Object ignore = null)
 	{
 		
@@ -100,6 +90,21 @@ class MOE_Hologram : Hologram
 		}
 
 		return DayZPhysics.RayCastBullet(from, to, MOE_Constants.PlacementCollisionLayers, ignore, hitObject, hitPosition, hitNormal, hitFraction);
+	}
+	
+	bool GetRaycastHit_MOE()
+	{
+		return m_RaycastHit_MOE;
+	}
+	
+	Object GetPlacementTarget_MOE()
+	{
+		return m_PlacementTarget_MOE;
+	}
+	
+	protected float GetRaycastDistance_MOE()
+	{
+		return MOE_Constants.DISTANCE_MOUNT_EXPLOSIVE;
 	}
 	
 	protected vector GetExplosivePlacementPosition_MOE(MOE_ExplosiveBase explosive, vector hitPosition, vector hitNormal)

@@ -36,6 +36,13 @@ enum MOE_EExplosiveStateFlags
 	MOUNTED = 4	
 }
 
+enum MOE_EExplosiveMountingModes 
+{
+	EVERYWHERE, 
+	BASEBUILDINGONLY,
+	SELECTEDONLY
+}
+
 typedef Param2<int, int> MOE_NetworkID;
 typedef Param4<int, int, int, int> MOE_PersistentID;
 

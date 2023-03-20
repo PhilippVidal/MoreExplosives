@@ -118,6 +118,13 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 	bool CanTakeDamageWhileMounted;
 	bool CanTakeDamageWhileArmed;
 	bool CanOnlyRaidDoors;
+	bool CanOnlyDamagePlacementTarget;
+	bool CanOnlyMountDuringSchedule;
+	
+	//0 = Everywhere, 
+	//1 = Only on Base Building Objects, 
+	//2 = Only on selected objects
+	int MountingMode;
 	
 	string AmmoType;
 	string ExplosionBehaviourType;
@@ -148,7 +155,11 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 		HasToBeMounted 				= false;
 		CanTakeDamageWhileMounted 	= false;
 		CanTakeDamageWhileArmed	 	= true;
-		CanOnlyRaidDoors = false;
+		CanOnlyRaidDoors 			= false;
+		CanOnlyDamagePlacementTarget = false;
+		CanOnlyMountDuringSchedule 	= false;
+		
+		MountingMode = MOE_EExplosiveMountingModes.EVERYWHERE;
 			
 		AmmoType 				= "Explosion_NonLethal";
 		ExplosionBehaviourType 	= "MOE_ExplosionBehaviourBasic";
@@ -162,61 +173,92 @@ class MOE_ConfigDataExplosive : MOE_ConfigDataBase
 		//Load values from config if they exist	
 		string basePath = GetBasePath(type);	
 		string path = basePath + "timeToArm";
-		if(GetGame().ConfigIsExisting(path)) TimeToArm = GetGame().ConfigGetFloat(path);
+		if(GetGame().ConfigIsExisting(path)) 
+			TimeToArm = GetGame().ConfigGetFloat(path);
 		
 		path = basePath + "timeToDisarm";
-		if(GetGame().ConfigIsExisting(path)) TimeToDisarm = GetGame().ConfigGetFloat(path);
+		if(GetGame().ConfigIsExisting(path)) 
+			TimeToDisarm = GetGame().ConfigGetFloat(path);
 
 		path = basePath + "timeToDefuse";
-		if(GetGame().ConfigIsExisting(path)) TimeToDefuse = GetGame().ConfigGetFloat(path);
+		if(GetGame().ConfigIsExisting(path)) 
+			TimeToDefuse = GetGame().ConfigGetFloat(path);
 		
 		path = basePath + "timeToMount";
-		if(GetGame().ConfigIsExisting(path)) TimeToMount = GetGame().ConfigGetFloat(path);
+		if(GetGame().ConfigIsExisting(path)) 
+			TimeToMount = GetGame().ConfigGetFloat(path);
 		
 		path = basePath + "timeToDismount";
-		if(GetGame().ConfigIsExisting(path)) TimeToDismount = GetGame().ConfigGetFloat(path);
+		if(GetGame().ConfigIsExisting(path)) 
+			TimeToDismount = GetGame().ConfigGetFloat(path);
 
 		
 		path = basePath + "explodeOnRuinedChance";
-		if(GetGame().ConfigIsExisting(path)) ExplodeOnRuinedChance = GetGame().ConfigGetFloat(path);
+		if(GetGame().ConfigIsExisting(path)) 
+			ExplodeOnRuinedChance = GetGame().ConfigGetFloat(path);
 
 		path = basePath + "ruinAttachmentsOnRuinedChance";
-		if(GetGame().ConfigIsExisting(path)) RuinAttachmentsOnRuinedChance = GetGame().ConfigGetFloat(path);
+		if(GetGame().ConfigIsExisting(path)) 
+			RuinAttachmentsOnRuinedChance = GetGame().ConfigGetFloat(path);
 		
 		
 		path = basePath + "hasToBeMounted";
-		if(GetGame().ConfigIsExisting(path)) HasToBeMounted = GetGame().ConfigGetInt(path) != 0;
+		if(GetGame().ConfigIsExisting(path)) 
+			HasToBeMounted = GetGame().ConfigGetInt(path) != 0;
 		
 		path = basePath + "canTakeDamageWhileMounted";
-		if(GetGame().ConfigIsExisting(path)) CanTakeDamageWhileMounted = GetGame().ConfigGetInt(path) != 0;
+		if(GetGame().ConfigIsExisting(path)) 
+			CanTakeDamageWhileMounted = GetGame().ConfigGetInt(path) != 0;
 		
 		path = basePath + "canTakeDamageWhileArmed";
-		if(GetGame().ConfigIsExisting(path)) CanTakeDamageWhileArmed = GetGame().ConfigGetInt(path) != 0;
+		if(GetGame().ConfigIsExisting(path)) 
+			CanTakeDamageWhileArmed = GetGame().ConfigGetInt(path) != 0;
 			
 		path = basePath + "canOnlyRaidDoors";
-		if(GetGame().ConfigIsExisting(path)) CanOnlyRaidDoors = GetGame().ConfigGetInt(path) != 0;
+		if(GetGame().ConfigIsExisting(path)) 
+			CanOnlyRaidDoors = GetGame().ConfigGetInt(path) != 0;
 			
 		
+		path = basePath + "canOnlyDamagePlacementTarget";
+		if(GetGame().ConfigIsExisting(path)) 
+			CanOnlyDamagePlacementTarget = GetGame().ConfigGetInt(path) != 0;
+		
+		path = basePath + "canOnlyMountDuringSchedule";
+		if(GetGame().ConfigIsExisting(path)) 
+			CanOnlyMountDuringSchedule = GetGame().ConfigGetInt(path) != 0;
+		
+		
+		path = basePath + "mountingMode";
+		if(GetGame().ConfigIsExisting(path)) 
+			MountingMode = GetGame().ConfigGetInt(path);
+		
+		
 		path = basePath + "explosionBehaviour";
-		if(GetGame().ConfigIsExisting(path)) ExplosionBehaviourType = GetGame().ConfigGetTextOut(path);	
+		if(GetGame().ConfigIsExisting(path)) 
+			ExplosionBehaviourType = GetGame().ConfigGetTextOut(path);	
 
 		
 		path = string.Format("%1 %2 %3", CFG_VEHICLESPATH, type, "ammoType");	
-		if(GetGame().ConfigIsExisting(path)) AmmoType = GetGame().ConfigGetTextOut(path);
+		if(GetGame().ConfigIsExisting(path)) 
+			AmmoType = GetGame().ConfigGetTextOut(path);
 		
 		
 		path = basePath + "attachableTriggers";
-		if(GetGame().ConfigIsExisting(path)) GetGame().ConfigGetTextArray(path, AttachableTriggers);
+		if(GetGame().ConfigIsExisting(path)) 
+			GetGame().ConfigGetTextArray(path, AttachableTriggers);
 		
 		
 		path = basePath + "armTools";
-		if(GetGame().ConfigIsExisting(path)) GetGame().ConfigGetTextArray(path, ArmTools);
+		if(GetGame().ConfigIsExisting(path)) 
+			GetGame().ConfigGetTextArray(path, ArmTools);
 		
 		path = basePath + "disarmTools";
-		if(GetGame().ConfigIsExisting(path)) GetGame().ConfigGetTextArray(path, DisarmTools);
+		if(GetGame().ConfigIsExisting(path)) 
+			GetGame().ConfigGetTextArray(path, DisarmTools);
 		
 		path = basePath + "defuseTools";
-		if(GetGame().ConfigIsExisting(path)) GetGame().ConfigGetTextArray(path, DefuseTools);
+		if(GetGame().ConfigIsExisting(path)) 
+			GetGame().ConfigGetTextArray(path, DefuseTools);
 	}
 
 #ifdef MOE_DEBUG_CONFIG		

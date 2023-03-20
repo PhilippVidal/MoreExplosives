@@ -211,6 +211,11 @@ class CfgVehicles
 			canTakeDamageWhileArmed = 0;
 			canOnlyRaidDoors = 0;
 			
+			canOnlyDamagePlacementTarget = 0;
+			canOnlyMountDuringSchedule = 0;
+			
+			mountingMode = 0;
+			
 			explosionBehaviour = "MOE_SingleExplosion";
 
 			attachableTriggers[] = {
@@ -250,6 +255,11 @@ class CfgVehicles
 			canTakeDamageWhileArmed = 0;
 			canOnlyRaidDoors = 0;
 
+			canOnlyDamagePlacementTarget = 0;
+			canOnlyMountDuringSchedule = 0;
+	
+			mountingMode = 0;
+			
 			explosionBehaviour = "MOE_SingleExplosion";
 
 			attachableTriggers[] = {
@@ -450,6 +460,15 @@ class CfgVehicles
 				MOE_Explosive_Homemade = 1;
 				MOE_Explosive_Military = 1;
 			};
+			
+			//Which explosive types can be mounted on this object? 
+			//if not defined defaults to 0 (false)
+			//requires proper mounting mode to be set on explosive
+			class Mountable
+			{
+				MOE_Explosive_Homemade = 1;
+				MOE_Explosive_Military = 1;
+			};
 
 			//Manually determined order in which the damage zones are damaged
 			//zones that are not listed get appended at the end
@@ -556,6 +575,12 @@ class CfgVehicles
 		class MOE_Settings
 		{
 			class DamageMultipliers
+			{
+				MOE_Explosive_Homemade = 1;
+				MOE_Explosive_Military = 1;
+			};
+			
+			class Mountable
 			{
 				MOE_Explosive_Homemade = 1;
 				MOE_Explosive_Military = 1;
