@@ -1,5 +1,4 @@
-#ifndef SERVER
-modded class Hologram 
+class MOE_Hologram : Hologram
 {
 	protected bool m_RaycastHit_MOE;
 	
@@ -240,11 +239,10 @@ modded class Hologram
 	}
 #endif
 	
-	void ~Hologram()
+	void ~MOE_Hologram()
 	{
 #ifdef MOE_DEBUG_PLACEMENT
 		Debug_RemoveExplosivePlacementVectors();		
 #endif
 	}
 }
-#endif

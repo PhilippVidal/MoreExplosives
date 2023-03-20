@@ -45,16 +45,16 @@ class MOE_ActionMountExplosive : ActionDeployObject
 		{
 			return false;
 		}
-
-#ifndef SERVER
+		
 		if(!GetGame().IsDedicatedServer())
 		{
-			if(!player.IsPlacingLocal())
+			MOE_Hologram hologram;
+			if(!player.IsPlacingLocal() || !CastTo(hologram, player.GetHologramLocal()))
 			{
 				return false;
 			}
 			
-			if(!player.GetHologramLocal().GetRaycastHit_MOE())
+			if(!hologram.GetRaycastHit_MOE())
 			{
 				return false;
 			}
@@ -64,7 +64,7 @@ class MOE_ActionMountExplosive : ActionDeployObject
 				return false;
 			}
 		}
-#endif
+		
 		return true;
 	}
 	
