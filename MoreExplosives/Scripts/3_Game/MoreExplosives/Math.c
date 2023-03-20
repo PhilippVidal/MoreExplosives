@@ -73,7 +73,7 @@ class HDSN_Math
 	
 	static vector ProjectOnPlane(vector vec, vector planeNormal)
 	{
-		return vec - (vector.Dot(vec, planeNormal) / planeNormal.LengthSq()) * planeNormal);
+		return vec - vector.Dot(vec, planeNormal) * planeNormal);
 	}
 }
 #endif
