@@ -6,7 +6,7 @@ class CfgPatches
         weapons[]={};
         requiredVersion=0.1;
         requiredAddons[] = {
-			"MoreExplosives_Config",
+	    "MoreExplosives_Config",
             "BBP_Vanilla_Dmg"
         };
     };
