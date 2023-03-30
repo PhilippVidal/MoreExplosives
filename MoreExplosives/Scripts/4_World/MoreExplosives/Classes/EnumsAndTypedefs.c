@@ -43,6 +43,13 @@ enum MOE_EExplosiveMountingModes
 	SELECTEDONLY
 }
 
+enum MOE_EDamageSystems
+{
+	DAYZ,	//Vanilla damage only 
+	MOE,	//Custom modified vanilla damage to base building objects
+	BC		//Simple integer-based damage
+}
+
 typedef Param2<int, int> MOE_NetworkID;
 typedef Param4<int, int, int, int> MOE_PersistentID;
 

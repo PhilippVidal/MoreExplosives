@@ -89,7 +89,16 @@ class MOE_Hologram : Hologram
 			to = from + camDirection * maxProjectionDistance;
 		}
 
-		return DayZPhysics.RayCastBullet(from, to, MOE_Constants.PlacementCollisionLayers, ignore, hitObject, hitPosition, hitNormal, hitFraction);
+		vector cPos;
+		vector cDir;
+		int cComp;
+		set<Object> results = new set<Object>();
+		int iType = ObjIntersect.Geom;
+		
+		bool value = DayZPhysics.RaycastRV(from, to, cPos, cDir, cComp, results, null, null,  true,  false, iType);
+		
+		
+		return DayZPhysics.RayCastBullet(from, to, MOE_Constants.PlacementCollisionLayers, ignore, hitObject, hitPosition, hitNormal, hitFraction) && value;
 	}
 	
 	bool GetRaycastHit_MOE()

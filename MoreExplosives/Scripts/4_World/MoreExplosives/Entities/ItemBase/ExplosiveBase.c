@@ -605,6 +605,7 @@ class MOE_ExplosiveBase : ItemBase
 				return placementTarget && GetGame().ConfigGetInt(string.Format("%1 %2 MOE_Settings Mountable %3", CFG_VEHICLESPATH, placementTarget.GetType(), GetType()));
 		}
 
+		
 		return true;	
 	}
 	

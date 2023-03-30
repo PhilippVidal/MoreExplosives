@@ -29,22 +29,32 @@ class MoreExplosives
 	protected ref map<string, ref MOE_ConfigDataTriggerBase> 	m_CachedTriggerData;
 	protected ref map<string, ref MOE_AmmoData> 				m_CachedAmmoData;
 	
+	protected ref MOE_DamageSystemBase m_DamageSystem;
+	
 
 	//////////////////////////////////////////
 	////////// GENERAL MOD SETTINGS //////////
 	//////////////////////////////////////////
 	
-	protected bool m_IsCustomDamageEnabled;
+	//protected bool m_IsCustomDamageEnabled;
 	protected bool m_IsDoorRaidOnlyEnabled;
 	protected bool m_IsMOERaidingOnlyEnabled;
 	protected bool m_IsDeleteLocksEnabled;
 	protected bool m_IsDestroyBaseAfterDestructionEnabled;
 	protected bool m_IsRaidSchedulingEnabled;
 	
-	bool IsCustomDamageEnabled()
+	protected int m_SelectedDamageSystemType;
+	
+	//bool IsCustomDamageEnabled()
+	//{
+	//	return m_IsCustomDamageEnabled;
+	//}
+	
+	int GetSelectedDamageSystemType()
 	{
-		return m_IsCustomDamageEnabled;
+		return m_SelectedDamageSystemType;
 	}
+	
 	
 	bool IsDoorRaidOnlyEnabled()
 	{
@@ -158,11 +168,12 @@ class MoreExplosives
 	
 	void AfterInit()
 	{
-		ReadSettingsFromConfig();	
+		ReadSettingsFromConfig();
+		InitializeDamageSystem();	
 #ifdef SERVER
 		Print("MoreExplosives instance has been created! Log for this session will be called " + m_LogName);
 		string logStr = "MOE instance has been created!\n	GENERAL SETTINGS:";
-		logStr += "\n		customDamageEnabled = " + m_IsCustomDamageEnabled;
+		logStr += "\n		selectedDamageSystem = " + m_SelectedDamageSystem;
 		logStr += "\n		doorRaidOnlyEnabled = " + m_IsDoorRaidOnlyEnabled;
 		logStr += "\n		raidOnlyWithMOE = " + m_IsMOERaidingOnlyEnabled;
 		logStr += "\n		deleteLocks = " + m_IsDeleteLocksEnabled;		
@@ -171,11 +182,64 @@ class MoreExplosives
 #endif
 	}
 
-	
 	//////////////////////////
 	///// Damage Dealing /////
 	//////////////////////////
 	
+	protected bool InitializeDamageSystem()
+	{
+		switch(m_SelectedDamageSystemType)
+		{
+			case MOE_EDamageSystems.DAYZ:
+				m_DamageSystem = new MOE_DamageSystemDayZ();
+				return true;
+			break;
+			
+			case MOE_EDamageSystems.MOE:
+				m_DamageSystem = new MOE_DamageSystemMOE();
+				return true;
+			break;
+			
+			case MOE_EDamageSystems.BC:
+				m_DamageSystem = new MOE_DamageSystemBC();
+				return true;
+			break;
+		}
+		
+		return false;
+	}
+	
+	MOE_DamageSystemBase GetDamageSystem()
+	{
+		return m_DamageSystem;
+	}
+	
+	//return true -> deal custom damage only or no damage at all
+	//return false -> deal vanilla damage 
+	bool TryHandleDamage(EntityAI target, int component, string dmgZone, EntityAI source, string ammo)
+	{
+		if(!m_DamageSystem)
+		{
+			return false;
+		}
+		
+		MOE_ExplosionObject explosiveObject;
+		if(!CastTo(explosiveObject, source))
+		{
+			return IsMOERaidingOnlyEnabled();
+		}
+		
+		MOE_ExplosiveBase explosive;
+		if(!CastTo(explosive, explosiveObject.GetSourceExplosive()))
+		{
+			Log_MOE(string.Format("MoreExplosives::HandleDamage -> MOE_ExplosionObject does not have a valid source explosive (%1)", explosiveObject.GetSourceExplosive()), MOE_ELogTypes.ERROR);
+			return false;
+		}
+
+		return !m_DamageSystem.CanDealDamage(target, component, dmgZone, explosive, explosiveObject, ammo) || m_DamageSystem.DealDamage(target, component, dmgZone, explosive, explosiveObject, ammo);
+	}
+	
+	//TODO: this should probably be moved to MOE_DamageSystemMOE in the future 	
 	bool DealDamageToEntity(string ammo, EntityAI source, EntityAI entity, vector explosionPosition, vector modelPos)
 	{		
 		MOE_AmmoData ammoData;
@@ -405,16 +469,26 @@ class MoreExplosives
 		}
 		
 		
-		float range = vector.Distance(explosionPosition, targetPos);		
-		if(range <= fullDamageRange || maxRange <= fullDamageRange)
-		{
-			return 1.0;
-		}
+		//float range = vector.Distance(explosionPosition, targetPos);		
+		//if(range <= fullDamageRange || maxRange <= fullDamageRange)
+		//{
+		//	return 1.0;
+		//}
 		
-		maxRange -= fullDamageRange;
-		range -= fullDamageRange;
-		return Math.Clamp(1 - (range / maxRange), 0.0, 1.0);
+		//maxRange -= fullDamageRange;
+		//range -= fullDamageRange;
+		//return Math.Clamp(1 - (range / maxRange), 0.0, 1.0);
+		
+		float range = vector.Distance(explosionPosition, targetPos);	
+		float multiplier = InterpolateDistance(maxRange, fullDamageRange, range, entity, source);
+		return Math.Clamp(multiplier, 0.0, 1.0);
 	}	
+	
+	//Override this if you want to have different damage dropoffs (e.g., non-linear)
+	protected float InterpolateDistance(float maxRange, float fullDamageRange, float range, EntityAI entity, EntityAI source)
+	{
+		return Math.InverseLerp(maxRange, fullDamageRange, range);
+	}
 	
 	///////////////////////////
 	///// Raid Scheduling /////
@@ -632,11 +706,11 @@ class MoreExplosives
 		m_IsDeleteLocksEnabled = 0;
 		m_IsDestroyBaseAfterDestructionEnabled = 0;
 		
-		string path = CFG_MOE + "customDamageEnabled";
-		if(GetGame().ConfigIsExisting(path))
-		{
-			m_IsCustomDamageEnabled = GetGame().ConfigGetInt(path) != 0;
-		}
+		//string path = CFG_MOE + "customDamageEnabled";
+		//if(GetGame().ConfigIsExisting(path))
+		//{
+		//	m_IsCustomDamageEnabled = GetGame().ConfigGetInt(path) != 0;
+		//}
 		
 		path = CFG_MOE + "doorRaidOnlyEnabled";
 		if(GetGame().ConfigIsExisting(path))
@@ -688,8 +762,19 @@ class MoreExplosives
 			}
 		}	
 #endif	
+		
+		path = CFG_MOE + "damageSystem";
+		if(GetGame().ConfigIsExisting(path))
+		{
+			m_SelectedDamageSystemType = GetGame().ConfigGetInt(path);
+			
+			if(m_SelectedDamageSystemType > EnumTools.GetEnumSize(MOE_EDamageSystems) - 1)
+			{
+				m_SelectedDamageSystemType = 0;
+			}
+		}
 	}
-	
+
 	MOE_EntityData CacheEntityData(string entityType, bool trySorting, array<string> dmgZones = null)
 	{
 		MOE_EntityData data = new MOE_EntityData(entityType, dmgZones);
