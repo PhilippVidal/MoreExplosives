@@ -1,11 +1,13 @@
 class MOE_MountExplosiveActionData : PlaceObjectActionData
 {
 	Object m_PlacementTarget;
+	int m_HitComponent;
 }
 
 class MOE_MountExplosiveActionReceiveData : PlaceObjectActionReciveData
 {
 	Object m_PlacementTarget;
+	int m_HitComponent;
 }
 
 class MOE_ActionMountExplosiveCB : ActiondeployObjectCB
@@ -75,6 +77,7 @@ class MOE_ActionMountExplosive : ActionDeployObject
 		}
 
 		meActionData.m_PlacementTarget = hologram.GetPlacementTarget_MOE();
+		meActionData.m_HitComponent = hologram.GetHitComponent_MOE();
 #endif
 
 		return true;
@@ -189,16 +192,19 @@ class MOE_ActionMountExplosive : ActionDeployObject
 		explosive.SoundSynchRemoteReset();
 		
 		Object placementTarget = meActionData.m_PlacementTarget;
+		int hitComponent = meActionData.m_HitComponent;
 		if(explosive.CanBeMountedOn(placementTarget))
 		{
-			explosive.Mount(placementTarget);
+			explosive.Mount(placementTarget, hitComponent);
 		}
 	}
 	
 	override void WriteToContext(ParamsWriteContext ctx, ActionData action_data)
 	{
 		super.WriteToContext(ctx, action_data);
-		ctx.Write(MOE_MountExplosiveActionData.Cast(action_data).m_PlacementTarget);
+		MOE_MountExplosiveActionData actionData = MOE_MountExplosiveActionData.Cast(action_data);
+		ctx.Write(actionData.m_PlacementTarget);
+		ctx.Write(actionData.m_HitComponent);
 	}
 	
 	override bool ReadFromContext(ParamsReadContext ctx, out ActionReciveData action_recive_data)
@@ -219,8 +225,15 @@ class MOE_ActionMountExplosive : ActionDeployObject
 		{
 			return false;
 		}
+		
+		int hitComponent;	
+		if(!ctx.Read(hitComponent))
+		{
+			return false;
+		}
 			
 		action_data_me.m_PlacementTarget = placementTarget;
+		action_data_me.m_HitComponent = hitComponent;
 		return true;
 	}
 	
@@ -231,5 +244,6 @@ class MOE_ActionMountExplosive : ActionDeployObject
 		MOE_MountExplosiveActionReceiveData recive_data_me = MOE_MountExplosiveActionReceiveData.Cast(action_recive_data);
 		MOE_MountExplosiveActionData action_data_me = MOE_MountExplosiveActionData.Cast(action_data);
 		action_data_me.m_PlacementTarget = recive_data_me.m_PlacementTarget;
+		action_data_me.m_HitComponent = recive_data_me.m_HitComponent;
 	}	
 }

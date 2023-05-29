@@ -108,5 +108,37 @@ class HDSN_MiscFunctions
 	{
 		return (value & flagBit) != 0;
 	}
+	
+	static bool IsBitMaskSet(int value, int mask)
+	{
+		return (value & mask) == mask;
+	}
+	
+	static string IntToHexString(int input, bool removeLeadingZeros = true)
+	{
+		static const string hexChars[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"};
+		
+		string hexValue = "";
+		for(int i = 0; i < 8; i++)
+		{
+			int index = (input >> (i * 4)) & 0xF;
+			hexValue = hexChars[index] + hexValue;
+		}
+		
+		if(!removeLeadingZeros)
+		{
+			return hexValue;
+		}
+		
+		for(int j = 0; j < 8; j++)
+		{
+			if(hexValue[j] != "0")
+			{
+				return hexValue.Substring(j, 8 - j);
+			}
+		}		
+			
+		return "0";			
+	}
 }
 #endif

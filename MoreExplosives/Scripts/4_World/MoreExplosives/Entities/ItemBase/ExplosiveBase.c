@@ -1,6 +1,46 @@
 //Base class for all explosives 
 //Explosives can have different types of triggers 
 //Assigned Explosion Behaviour determines 'how' it explodes
+/*
+modded class Fence 
+{
+	override void AddArrow(Object arrow, int componentIndex)
+	{
+		int pivot = GetBonePivot(GetFireGeometryLevel(), componentIndex);
+
+		vector parentTransMat[4];
+		vector arrowTransMat[4];
+		
+		if (pivot == -1)
+		{
+			GetTransform(parentTransMat);
+		}
+		else
+		{
+			GetBoneTransformWS(pivot, parentTransMat);
+		}
+		
+		arrow.GetTransform(arrowTransMat);
+		Math3D.MatrixInvMultiply4(parentTransMat, arrowTransMat, arrowTransMat);
+		
+		// orthogonalize matrix - parent might be skewed
+		Math3D.MatrixOrthogonalize4(arrowTransMat);
+		
+		arrow.SetTransform(arrowTransMat);
+		
+		AddChild(arrow, pivot);
+		Print("Added child");
+		
+		vector resTransMat[4];
+		arrow.GetTransform(resTransMat);
+		
+		
+		Print("Added child2");
+	}
+}
+*/
+
+
 class MOE_ExplosiveBase : ItemBase
 {	
 	protected const string SLOT_TRIGGER = "Trigger_MOE";
@@ -177,8 +217,13 @@ class MOE_ExplosiveBase : ItemBase
 		}
 	}
 	
-	void Mount(Object placementTarget = null)
+	void Mount(Object placementTarget, int hitComponent)
 	{
+		
+		//placementTarget.AddArrow(this, hitComponent);
+		
+		
+		
 		SetPlacementTarget(placementTarget);
 		SetIsMounted(true);
 		OnMounted();

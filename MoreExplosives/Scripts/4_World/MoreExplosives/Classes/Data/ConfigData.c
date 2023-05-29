@@ -35,6 +35,7 @@ class MOE_ConfigDataBase
 #endif	
 }
 
+
 class MOE_ConfigDataTriggerBase : MOE_ConfigDataBase
 {
 	float LightRadius;

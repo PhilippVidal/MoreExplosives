@@ -1,8 +1,9 @@
 enum MOE_ERPCTypes
 {
-	SYNC 			= 711220,	
-	EVENT_ARMED 	= 711221,	
-	EVENT_EVALUATE 	= 711222	
+	CONFIG 			= 711220,	
+	SYNC 			= 711221,	
+	EVENT_ARMED 	= 711222,	
+	EVENT_EVALUATE 	= 711223	
 }
 
 enum MOE_ELogTypes
@@ -43,11 +44,19 @@ enum MOE_EExplosiveMountingModes
 	SELECTEDONLY
 }
 
-enum MOE_EDamageSystems
+enum MOE_EDestructionSystemTypes
 {
-	DAYZ,	//Vanilla damage only 
-	MOE,	//Custom modified vanilla damage to base building objects
-	BC		//Simple integer-based damage
+	DAYZ,	 
+	MOE,	
+	BC		
+}
+
+enum MOE_EDamageSystemTypes
+{
+	NONE,
+	DAYZ,
+	MOE,
+	BC
 }
 
 typedef Param2<int, int> MOE_NetworkID;

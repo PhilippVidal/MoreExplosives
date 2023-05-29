@@ -1,19 +1,37 @@
 class MOE_Hologram : Hologram
 {
-	protected bool m_RaycastHit_MOE;
+	protected bool m_HasRaycastHit_MOE;
+	protected int m_HitComponent_MOE;
 	protected Object m_PlacementTarget_MOE;
+	
+	void ~MOE_Hologram()
+	{
+#ifdef MOE_DEBUG_PLACEMENT
+		Debug_RemoveExplosivePlacementVectors();		
+#endif
+	}
+	
+	override string GetProjectionName(ItemBase item)
+	{
+		if (!item)
+		{
+			return "";
+		}
+		
+		return item.GetType();
+	}
 	
 	override void UpdateHologram(float timeslice)
 	{
-		m_RaycastHit_MOE = false;	
+		m_HasRaycastHit_MOE = false;	
+		m_HitComponent_MOE = 0;
 		m_PlacementTarget_MOE = null;	
-		if(m_Projection.IsInherited(MOE_ExplosiveBase))
+		if(!m_Projection.IsInherited(MOE_ExplosiveBase))
 		{
-			UpdateExplosiveHologram_MOE(timeslice);
 			return;
 		}
 		
-		super.UpdateHologram(timeslice);
+		UpdateExplosiveHologram_MOE(timeslice);
 	}
 	
 	protected void UpdateExplosiveHologram_MOE(float timeslice)
@@ -37,12 +55,13 @@ class MOE_Hologram : Hologram
 
 		vector position, normal;
 		float hitFraction;
+		int hitComponent;
 		
-		m_RaycastHit_MOE = DoPlacementRaycast_MOE(m_Player, position, normal, hitFraction, m_PlacementTarget_MOE);
-		
+		m_HasRaycastHit_MOE = DoPlacementRaycast_MOE(m_Player, position, normal, hitFraction, m_PlacementTarget_MOE, m_HitComponent_MOE);
+		//Print(string.Format("Hit Object = %1, Component Hit = %2", m_PlacementInfo_MOE.PlacementTarget, m_PlacementInfo_MOE.HitComponent));
 		MOE_ExplosiveBase explosive = MOE_ExplosiveBase.Cast(m_Projection); 
 		
-		if(m_RaycastHit_MOE && explosive)
+		if(m_HasRaycastHit_MOE && explosive)
 		{
 			SetProjectionOrientation( GetExplosivePlacementOrientation_MOE(explosive, position, normal) );
 			SetProjectionPosition( GetExplosivePlacementPosition_MOE(explosive, position, normal) );
@@ -56,20 +75,14 @@ class MOE_Hologram : Hologram
 #endif
 		}
 	
-		m_Projection.SetInvisible(!m_RaycastHit_MOE);
-
-		//Don't think these are really needed but whatever
-		EvaluateCollision();
-		RefreshTrigger();
-		CheckPowerSource();
-		
-			
+		m_Projection.SetInvisible(!m_HasRaycastHit_MOE);
+	
 		RefreshVisual();
 
 		m_Projection.OnHologramBeingPlaced(m_Player);
 	}
 		
-	protected bool DoPlacementRaycast_MOE(notnull PlayerBase player, out vector hitPosition, out vector hitNormal, out float hitFraction, out Object hitObject, Object ignore = null)
+	protected bool DoPlacementRaycast_MOE(notnull PlayerBase player, out vector hitPosition, out vector hitNormal, out float hitFraction, out Object hitObject, out int component, Object ignore = null)
 	{
 		
 		float maxProjectionDistance = GetRaycastDistance_MOE();
@@ -89,26 +102,34 @@ class MOE_Hologram : Hologram
 			to = from + camDirection * maxProjectionDistance;
 		}
 
-		vector cPos;
-		vector cDir;
-		int cComp;
+		
+		if(!DayZPhysics.RayCastBullet(from, to, MOE_Constants.PlacementCollisionLayers, ignore, hitObject, hitPosition, hitNormal, hitFraction))
+		{
+			return false;
+		}
+		
+		vector contactPosition, contactDirection;
 		set<Object> results = new set<Object>();
-		int iType = ObjIntersect.Geom;
+		int intersectionType = ObjIntersect.Fire;
 		
-		bool value = DayZPhysics.RaycastRV(from, to, cPos, cDir, cComp, results, null, null,  true,  false, iType);
-		
-		
-		return DayZPhysics.RayCastBullet(from, to, MOE_Constants.PlacementCollisionLayers, ignore, hitObject, hitPosition, hitNormal, hitFraction) && value;
+		DayZPhysics.RaycastRV(from, to, contactPosition, contactDirection, component, results, m_Projection, m_Player, true,  false, intersectionType);
+		//Print(string.Format("RV Cast: Results = %1", results));
+		return true;
 	}
 	
 	bool GetRaycastHit_MOE()
 	{
-		return m_RaycastHit_MOE;
+		return m_HasRaycastHit_MOE;
 	}
 	
 	Object GetPlacementTarget_MOE()
 	{
 		return m_PlacementTarget_MOE;
+	}
+	
+	int GetHitComponent_MOE()
+	{
+		return m_HitComponent_MOE;
 	}
 	
 	protected float GetRaycastDistance_MOE()
@@ -252,11 +273,4 @@ class MOE_Hologram : Hologram
 		}
 	}
 #endif
-	
-	void ~MOE_Hologram()
-	{
-#ifdef MOE_DEBUG_PLACEMENT
-		Debug_RemoveExplosivePlacementVectors();		
-#endif
-	}
 }

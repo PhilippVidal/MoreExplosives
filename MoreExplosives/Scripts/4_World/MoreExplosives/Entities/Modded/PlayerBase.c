@@ -9,8 +9,8 @@ modded class PlayerBase
 			GetHologramServer().SetProjectionPosition(GetLocalProjectionPosition());
 			GetHologramServer().SetProjectionOrientation(GetLocalProjectionOrientation());
 			GetHologramServer().GetProjectionEntity().OnPlacementStarted(this);
-			GetHologramServer().CheckPowerSource();
-			GetHologramServer().RefreshVisual();
+			//GetHologramServer().CheckPowerSource();
+			//GetHologramServer().RefreshVisual();
 		}
 		
 		super.PlacingStartServer(item);
@@ -27,7 +27,8 @@ modded class PlayerBase
 		MOE_ExplosiveBase explosive;
 		if(CastTo(explosive, item))
 		{
-			m_HologramLocal = new MOE_Hologram(this, GetLocalProjectionPosition(), item);
+			vector pos = GetLocalProjectionPosition();
+			m_HologramLocal = new MOE_Hologram(this, pos, item);
 			GetHologramLocal().GetProjectionEntity().OnPlacementStarted(this);
 			return;
 		}

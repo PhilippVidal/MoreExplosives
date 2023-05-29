@@ -56,6 +56,12 @@ class CfgMoreExplosives
 
 	//Is raiding only possible during the set timeslots? 
 	raidSchedulingEnabled = 0;
+	
+	//Which damage system should be used to damage base building objects? 
+	//0 = DayZ	(Vanilla DayZ damage calculation)
+	//1 = MOE	(Custom modified vanilla damage)
+	//2 = BC	(Simple integer-based damage to whole object)
+	damageSystem = 1;
 
 	//Which base building objects should be cached on 
 	//server start-up instead of during server session?
