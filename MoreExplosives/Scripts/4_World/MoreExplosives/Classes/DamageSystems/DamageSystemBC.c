@@ -2,8 +2,23 @@ class MOE_DamageSystemBC : MOE_DamageSystemBase
 {
 	override bool CanDealDamage(EntityAI target, int component, string dmgZone, MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, string ammo)
 	{
-		return target && target.IsInherited(BaseBuildingBase) && super.CanDealDamage(target, component, dmgZone, explosive, explosiveObject, ammo);
+		BaseBuildingBase baseBuildingBase;
+		if(!super.CanDealDamage(target, component, dmgZone, explosive, explosiveObject, ammo) || !CastTo(baseBuildingBase, target))
+		{
+			return false;
+		}
+
+		MOE_ConfigBC config;
+		MOE_DestroyableObjectData_Internal destroyableObject;
+		if(!CastTo(config, GetMOE().GetConfig()) || !config.GetDestroyableObject(target.GetType(), destroyableObject))
+		{
+			return false;
+		}
+
+		
 	}
+	
+
 	
 	
 	override bool DealDamage(EntityAI target, int component, string dmgZone, MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, string ammo)

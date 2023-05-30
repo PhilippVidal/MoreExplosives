@@ -45,4 +45,79 @@ class MOE_ConfigBC : MOE_ConfigBase
 		m_ConfigData.ReadServerData(ctx);	
 	}
 	
+	MOE_JsonData_Internal GetJsonData()
+	{
+		return m_JsonData;
+	}
+	
+	MOE_CategoryData_Internal GetCategory(int id)
+	{
+		if(!m_JsonData || !m_JsonData.Categories)
+		{
+			return null;
+		}
+
+		return m_JsonData.Categories.Get(id);
+	}
+
+	MOE_DestroyableObjectData_Internal GetDestroyableObject(string type)
+	{
+		if(!m_JsonData || !m_JsonData.DestroyableObjects)
+		{
+			return null;
+		}
+
+		return m_JsonData.DestroyableObjects.Get(type);
+	}
+
+	bool GetDestroyableObject(string type, out MOE_DestroyableObjectData_Internal destroyableObject)
+	{
+		destroyableObject = GetDestroyableObject(type);
+		return destroyableObject != null;
+	}
+
+	int GetExplosiveID(string type)
+	{
+		if(!m_JsonData || !m_JsonData.ExplosiveIDs)
+		{
+			return 0;
+		}
+
+		return m_JsonData.ExplosiveIDs.Get(type);
+	}
+
+	bool IsExplosiveTypeAccepted(string explosiveType, MOE_DestroyableObjectData_Internal destroyableObject, array<int> builtPartIDs)
+	{
+		MOE_JsonData_Internal config; //TODO
+
+		int explosiveID = config.GetExplosiveID(explosiveType);
+		if(explosiveID < 1)
+		{
+			return false;
+		}
+
+		foreach(int partID : builtPartIDs)
+		{
+			
+
+			int categoryID = destroyableObject.PartCategories.Get(partID);
+			if(categoryID < 1)
+			{
+				continue;
+			}
+
+			MOE_CategoryData_Internal category = config.GetCategory(categoryID);
+			if(!category)
+			{
+				continue;
+			}
+
+			if(category.IncompatibleExplosiveTypes.Contains(explosiveID))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

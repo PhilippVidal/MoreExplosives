@@ -1,3 +1,119 @@
+class MOE_CategoryData_Internal
+{
+	int HealthIncrease;
+	ref array<int> IncompatibleExplosiveTypes;
+}
+
+class MOE_DestroyableObjectData_Internal
+{
+	int BaseCategory;
+	ref map<int, int> PartCategories;
+	bool DeleteWithoutDestroyableParts;
+	ref Param3<int, int, int> DestroyableParts;
+}
+
+class MOE_JsonData_Internal 
+{
+	ref map<string, int> ExplosiveIDs;
+	ref map<int, ref MOE_CategoryData_Internal> Categories;
+	ref map<string, ref MOE_DestroyableObjectData_Internal> DestroyableObjects;
+
+	void MOE_JsonData_Internal(MOE_JsonData_External externalData)
+	{
+		map<string, int> categoryIDs = new map<string, int>();
+		InitCategories(externalData, categoryIDs);
+		InitDestroyableObjects(externalData, categoryIDs);
+	}
+
+	protected void InitCategories(MOE_JsonData_External jsonData, out map<string, int> categoryIDs)
+	{
+		Categories = new map<int, ref MOE_CategoryData_Internal>();
+		ExplosiveIDs = new map<string, int>();
+
+		int categoryCount = 1;
+        int explosiveCount = 1;
+        
+		foreach(string categoryName, MOE_CategoryData_External externalCategory : jsonData.Categories)
+		{
+			MOE_CategoryData_Internal categoryData = new MOE_CategoryData_Internal();
+			categoryData.HealthIncrease = externalCategory.HealthIncrease;
+			categoryData.IncompatibleExplosiveTypes = new array<int>();
+
+			int explosiveID; 
+			foreach(string explosive : externalCategory.IncompatibleExplosiveTypes)
+			{				
+				if(!ExplosiveIDs.Find(explosive, explosiveID))
+				{			
+					explosiveID = explosiveCount++;		
+					ExplosiveIDs.Insert(explosive, explosiveID);
+				}
+
+				categoryData.IncompatibleExplosiveTypes.Insert(explosiveID);
+			}
+
+			int categoryID = categoryCount++;
+			Categories.Insert(categoryID, categoryData);
+			categoryIDs.Insert(categoryName, categoryID);  
+		}
+	}	
+
+	protected void InitDestroyableObjects(MOE_JsonData_External jsonData, map<string, int> categoryIDs)
+	{
+		DestroyableObjects = new map<string, ref MOE_DestroyableObjectData_Internal>();
+		foreach(string objectName, MOE_DestroyableObjectData_External externalData : jsonData.DestroyableObjects)
+		{	
+			//Get all parts listed in the config and their ids
+			map<string, int> potentialParts = MoreExplosives.GetConstructionPartIDs(externalData.Name);
+
+			MOE_DestroyableObjectData_Internal destroyableObject = new MOE_DestroyableObjectData_Internal();
+
+			//BaseCategory
+			if(externalData.BaseCategory != "")
+			{
+				categoryIDs.Find(externalData.BaseCategory, BaseCategory);
+			}
+
+			//PartCategories
+			destroyableObject.PartCategories = new map<int, int>();
+			foreach(string partName, string partCategory : externalData.PartCategories)
+			{
+				int partID;
+				if(!potentialParts.Find(partName, partID))
+				{
+					continue;
+				}
+
+				int categoryID;
+				if(!categoryIDs.Find(partCategory, categoryID))
+				{
+					continue;
+				}
+
+				PartCategories.Insert(partID, categoryID);
+			}
+
+			//DeleteWithoutDestroyableParts
+			destroyableObject.DeleteWithoutDestroyableParts = externalData.DeleteWithoutDestroyableParts;
+
+			//DestroyableParts
+			destroyableObject.DestroyableParts = new Param3<int, int, int>();
+			if(externalData.DestroyableParts && externalData.DestroyableParts.Count())
+			{
+				MoreExplosives.GetMasksFromPartList(
+					externalData.DestroyableParts, 
+					potentialParts, 
+					destroyableObject.DestroyableParts.param1, 
+					destroyableObject.DestroyableParts.param2, 
+					destroyableObject.DestroyableParts.param3);
+			}
+
+
+			DestroyableObjects.Insert(objectName, destroyableObject);
+		}
+	}
+}
+
+/*
 typedef map<string, int> MOE_BuildConfigurations;
 typedef map<string, string> MOE_DestroyList;
 
@@ -145,3 +261,6 @@ class MOE_JsonData_Internal
 		}
 	}
 }
+*/
+
+

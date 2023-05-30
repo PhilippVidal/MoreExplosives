@@ -20,8 +20,7 @@ modded class BaseBuildingBase
 			return false;
 		}	
 		
-		bool val = !GetMOE().TryHandleDamage(this, component, dmgZone, source, ammo);
-		return val;
+		return !GetMOE().TryHandleDamage(this, component, dmgZone, source, ammo);
 	}
 	
 	
@@ -86,6 +85,44 @@ modded class BaseBuildingBase
 	
 	int GetMaxHealth_MOE()
 	{
+		//TODO: get base health from config 
+		int maxHealth = 1;
+
+		Construction constr = GetConstruction();
+		if(!constr)
+		{
+			return maxHealth;
+		}
+
+		//TODO
+		//configData.DestroyableObjectData...
+
+		foreach(ConstructionPart part : constr.GetConstructionParts())
+		{
+			if(!part.IsBuilt())
+			{
+				continue;
+			}
+			
+			
+
+			int partId = part.GetId();
+			int categoryId;
+			if(!destroyableObjectData.PartCategories.Find(partId, categoryId))
+			{
+				continue;
+			}
+
+			MOE_CategoryData_Internal categoryData;
+			if(!configData.Categories.Find(categoryId, categoryData))
+			{
+				continue;
+			}
+
+			maxHealth += categoryData.HealthIncrease;
+
+		}
+
 		return 2; //TODO
 	}
 	
@@ -127,6 +164,25 @@ modded class BaseBuildingBase
 			HDSN_MiscFunctions.IntToHexString(mask1), 
 			HDSN_MiscFunctions.IntToHexString(mask2), 
 			HDSN_MiscFunctions.IntToHexString(mask3));
+	}
+
+
+	array<int> GetBuildPartIDs_MOE()
+	{
+		Construction constr = GetConstruction();
+		if(!constr)
+		{
+			return null;
+		}
+
+		array<int> partIDs = new array<int>();
+		foreach(ConstructionPart part : constr.GetConstructionParts())
+		{
+			if(part.IsBuilt())
+			{
+				partIDs.Insert(part.GetId());
+			}
+		}
 	}
 }
 
