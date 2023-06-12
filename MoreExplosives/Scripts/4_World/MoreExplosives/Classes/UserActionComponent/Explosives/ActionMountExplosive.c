@@ -120,7 +120,8 @@ class MOE_ActionMountExplosive : ActionDeployObject
 			}
 			
 			Object placementTarget = hologram.GetPlacementTarget_MOE();
-			if(!explosive.CanBeMountedOn(placementTarget))
+			int component = hologram.GetPlacementTargetComponent_MOE();
+			if(!explosive.CanBeMountedOn(placementTarget, component))
 			{
 				return false;
 			}

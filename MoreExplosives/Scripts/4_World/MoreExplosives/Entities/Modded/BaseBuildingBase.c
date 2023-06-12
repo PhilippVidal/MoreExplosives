@@ -1,16 +1,143 @@
 modded class BaseBuildingBase
 {	
-	
-	protected int m_Health_MOE = -1;
-	
+	protected ref array<int> m_Health_MOE;
+	protected ref array<int> m_MaxHealth_MOE;
+	protected bool m_IsConstructionFullyInitialized_MOE;
+
 	void BaseBuildingBase()
 	{
-#ifdef SERVER	
-		if(GetHealth_MOE() < 1) 
+		MOE_DestructionSystemBase destructionSystem = GetMOE().GetDestructionSystem();
+		if(destructionSystem)
 		{
-			InitHealth_MOE(); 
+			destructionSystem.InitBaseBuildingObject(this);
 		}
-#endif	
+	}
+
+	override void SetPartFromSyncData(ConstructionPart part)
+	{
+		super.SetPartFromSyncData(part);		
+		GetMOE().GetDestructionSystem().OnConstructionPartChanged(this, part);
+	}
+
+	void InitHealth_MOE()
+	{
+		MOE_ConfigDataDestroyableObject destroyableObject = GetMOE().GetDestroyableObject(GetType());
+		if(!destroyableObject)
+		{
+			return;
+		}
+
+		m_Health_MOE = new array<int>();
+		m_MaxHealth_MOE = new array<int>();
+
+		int count = destroyableObject.MainParts.Count();
+		m_Health_MOE.Reserve(count);
+		m_MaxHealth_MOE.Reserve(count);
+
+		for(int i = 0; i < count; ++i)
+		{
+			m_Health_MOE[i] = -1;
+			m_MaxHealth_MOE[i] = -1;
+		}		
+	}
+
+	void InitHealthValues_MOE(MOE_ConfigDataDestroyableObject destroyableObject, string mainPart)
+	{
+		int maxHealth = destroyableObject.CalculateHealth(this, mainPart);
+		m_MaxHealth_MOE[id] = maxHealth;
+		m_Health_MOE[id] = maxHealth;
+	}
+
+	void UpdateHealthValues_MOE(MOE_ConfigDataDestroyableObject destroyableObject, string mainPart)
+	{
+		MOE_MainPartData mainPartData;
+		if(!destroyableObject.MainParts.Find(mainPart, mainPartData))
+		{
+			return;
+		}
+
+		int id = mainPartData.ID;
+		int oldMaxHealth = m_MaxHealth_MOE[id];
+		int oldHealth = m_Health_MOE[id]; 
+		int newMaxHealth = destroyableObject.CalculateHealth(this, mainPart);
+		if((oldMaxHealth < 0) || (oldHealth < 0))
+		{
+			m_MaxHealth_MOE[id] = newMaxHealth;
+			m_Health_MOE[id] = newMaxHealth;
+			return;
+		}
+
+		OnMaxHealthChanged_MOE(mainPartData, oldMaxHealth, newMaxHealth);
+	}
+
+	int GetMaxHealth_MOE(int mainPartID)
+	{
+		return m_MaxHealth_MOE[mainPartData.ID];
+	}
+
+	int GetMaxHealth_MOE(string mainPart)
+	{
+		MOE_ConfigDataDestroyableObject destroyableObject;
+		if(!GetMOE().FindDestroyableObject(GetType(), destroyableObject))
+		{
+			return 0;
+		}
+
+		MOE_MainPartData mainPartData;
+		if(!destroyableObject.MainParts.Find(mainPart, mainPartData))
+		{
+			return 0;
+		}
+
+		return m_MaxHealth_MOE[mainPartData.ID];
+	}
+
+	int GetHealth_MOE(int mainPartID)
+	{
+		return m_Health_MOE[mainPartID];
+	}
+
+	int GetHealth_MOE(string mainPart)
+	{
+		MOE_ConfigDataDestroyableObject destroyableObject;
+		if(!GetMOE().FindDestroyableObject(GetType(), destroyableObject))
+		{
+			return 0;
+		}
+
+		MOE_MainPartData mainPartData;
+		if(!destroyableObject.MainParts.Find(mainPart, mainPartData))
+		{
+			return 0;
+		}
+
+		return m_Health_MOE[mainPartData.ID];
+	}
+
+	array<int> GetHealthValues_MOE()
+	{
+		return m_Health_MOE;
+	}
+
+	array<int> GetMaxHealthValues_MOE()
+	{
+		return m_MaxHealth_MOE;
+	}
+
+	void OnMaxHealthChanged_MOE(MOE_MainPartData mainPartData, int oldHealth, int newHealth)
+	{
+		float oldPercentage = (float)m_Health_MOE[mainPartData.ID] / oldHealth;
+		m_Health_MOE[mainPartData.ID] = Math.Ceil(newHealth * oldPercentage);
+	}
+
+
+	string GetMainPartFromComponent_MOE(int component)
+	{
+		//string part_name = target_object.GetActionComponentName( target.GetComponentIndex() );
+		string partName = GetActionComponentName(component);
+		Construction construction = GetConstruction();
+		ConstructionPart constructionPart = construction.GetConstructionPart(partName);
+		return constructionPart.GetMainPartName();
 	}
 	
 	override bool EEOnDamageCalculated(TotalDamageResult damageResult, int damageType, EntityAI source, int component, string dmgZone, string ammo, vector modelPos, float speedCoef)
@@ -20,11 +147,15 @@ modded class BaseBuildingBase
 			return false;
 		}	
 		
-		return !GetMOE().TryHandleDamage(this, component, dmgZone, source, ammo);
+		MOE_ExplosionObject explosionObject;
+		if(!CastTo(explosionObject, source))
+		{
+			return !GetMOE().IsMOERaidingOnlyEnabled();
+		}
+		
+		return GetMOE().GetDestructionSystem().UseExplosionForHitDetection() && !GetMOE().GetDestructionSystem().HandleExplosionHit(explosionObject, this, component, dmgZone, ammo);
 	}
 	
-	
-
 	bool HasGate_MOE()
 	{
 		Construction constr = GetConstruction();
@@ -78,70 +209,19 @@ modded class BaseBuildingBase
 	/// Functionality for BC damage system ///
 	//////////////////////////////////////////
 	
-	int GetHealth_MOE()
+	
+	void SetHealth_MOE(int newHealth, int mainPartID)
 	{
-		return m_Health_MOE;
+		int oldHealth = m_Health_MOE[mainPartID];
+		m_Health_MOE[mainPartID] = newHealth;
+		OnHealthChanged_MOE(oldHealth, newHealth);
 	}
 	
-	int GetMaxHealth_MOE()
+	protected void OnHealthChanged_MOE(int oldHealth, int newHealth)
 	{
-		//TODO: get base health from config 
-		int maxHealth = 1;
-
-		Construction constr = GetConstruction();
-		if(!constr)
-		{
-			return maxHealth;
-		}
-
-		//TODO
-		//configData.DestroyableObjectData...
-
-		foreach(ConstructionPart part : constr.GetConstructionParts())
-		{
-			if(!part.IsBuilt())
-			{
-				continue;
-			}
-			
-			
-
-			int partId = part.GetId();
-			int categoryId;
-			if(!destroyableObjectData.PartCategories.Find(partId, categoryId))
-			{
-				continue;
-			}
-
-			MOE_CategoryData_Internal categoryData;
-			if(!configData.Categories.Find(categoryId, categoryData))
-			{
-				continue;
-			}
-
-			maxHealth += categoryData.HealthIncrease;
-
-		}
-
-		return 2; //TODO
+		Print(string.Format("Health has been changed(%1): newHealth = %2, oldHealth = %3, Change = %4", this, newHealth, oldHealth, oldHealth - m_Health_MOE));
 	}
 	
-	void SetHealth_MOE(int newHealth)
-	{
-		int oldHealth = m_Health_MOE;
-		m_Health_MOE = newHealth;
-		OnHealthChanged_MOE(oldHealth);
-	}
-	
-	protected void OnHealthChanged_MOE(int oldHealth)
-	{
-		Print(string.Format("Health has been changed(%1): newHealth = %2, oldHealth = %3, Change = %4", this, m_Health_MOE, oldHealth, oldHealth - m_Health_MOE));
-	}
-	
-	protected void InitHealth_MOE()
-	{
-		m_Health_MOE = GetMaxHealth_MOE();
-	}
 	
 	string GetPartMask_MOE()
 	{

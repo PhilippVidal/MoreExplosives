@@ -6,10 +6,12 @@ class MOE_ConfigBase
 	// but since loading/caching has to be handled separately anyways and 
 	// the amount of "types" is quite limited this will be more convinient 
 	// for targeted access of specific type data
-	protected ref map<string, ref MOE_ConfigDataExplosive> 		m_CachedExplosiveData;		
-	protected ref map<string, ref MOE_ConfigDataSignalSource> 	m_CachedSignalSourceData;	
-	protected ref map<string, ref MOE_ConfigDataTriggerBase> 	m_CachedTriggerData;
+	//protected ref map<string, ref MOE_ConfigDataExplosive> 		m_CachedExplosiveData;		
+	//protected ref map<string, ref MOE_ConfigDataSignalSource> 	m_CachedSignalSourceData;	
+	//protected ref map<string, ref MOE_ConfigDataTriggerBase> 	m_CachedTriggerData;
 	
+	protected ref map<string, ref MOE_ConfigDataBase> m_CachedConfigData;
+
 	void MOE_ConfigBase()
 	{
 		Init();
@@ -18,9 +20,10 @@ class MOE_ConfigBase
 	
 	protected void Init()
 	{	
-		m_CachedExplosiveData 		= new map<string, ref MOE_ConfigDataExplosive>();	
-		m_CachedSignalSourceData 	= new map<string, ref MOE_ConfigDataSignalSource>();
-		m_CachedTriggerData 		= new map<string, ref MOE_ConfigDataTriggerBase>();	
+		m_CachedConfigData = new map<string, ref MOE_ConfigDataBase>();
+		//m_CachedExplosiveData 	= new map<string, ref MOE_ConfigDataExplosive>();	
+		//m_CachedSignalSourceData 	= new map<string, ref MOE_ConfigDataSignalSource>();
+		//m_CachedTriggerData 		= new map<string, ref MOE_ConfigDataTriggerBase>();	
 	}
 	
 	protected void LoadGeneralSettings()
@@ -42,69 +45,82 @@ class MOE_ConfigBase
 	{
 		
 	}
-	
-	
+
 	////////////////////
 	/// Data Getters ///
 	////////////////////
 	
-	MOE_ConfigDataExplosive GetExplosiveData(string type)
+	MOE_ConfigDataBase GetConfigData(string type)
+	{
+		return m_CachedConfigData.Get(type);
+	}
+
+	MOE_ConfigDataExplosive GetExplosiveData(string type)	
 	{	
-		MOE_ConfigDataExplosive data = m_CachedExplosiveData.Get(type);
-		if(!data)
+		MOE_ConfigDataBase data; 
+		if(!m_CachedConfigData.Find(type, data))
 		{
 			return LoadExplosiveData(type);
 		}
-		
-		return data;
+
+		return MOE_ConfigDataExplosive.Cast(data);		
 	}
 	
 	MOE_ConfigDataTimer GetTimerData(string type)
 	{		
-		MOE_ConfigDataTriggerBase data = m_CachedTriggerData.Get(type);		
-		if(!data)
+		MOE_ConfigDataBase data; 
+		if(!m_CachedConfigData.Find(type, data))
 		{
 			return LoadTimerData(type);
 		}
-		
+
 		return MOE_ConfigDataTimer.Cast(data);
 	}
 	
 	MOE_ConfigDataReceiver GetReceiverData(string type)
 	{	
-		MOE_ConfigDataTriggerBase data = m_CachedTriggerData.Get(type);
-		if(!data)
+		MOE_ConfigDataBase data; 
+		if(!m_CachedConfigData.Find(type, data))
 		{
 			return LoadReceiverData(type);
 		}
-		
-		return MOE_ConfigDataReceiver.Cast(data);
+
+		return MOE_ConfigDataReceiver.Cast(data);		
 	}
 	
 	MOE_ConfigDataSignalSource GetSignalSourceData(string type)
 	{
-		
-		MOE_ConfigDataSignalSource data = m_CachedSignalSourceData.Get(type);
-		if(!data)
+		MOE_ConfigDataBase data; 
+		if(!m_CachedConfigData.Find(type, data))
 		{
 			return LoadSignalSourceData(type);
 		}
-		
-		return data;
+
+		return MOE_ConfigDataSignalSource.Cast(data);
 	}
 	
 	MOE_ConfigDataDetonator GetDetonatorData(string type)
 	{
-		
-		MOE_ConfigDataSignalSource data = m_CachedSignalSourceData.Get(type);
-		if(!data)
+		MOE_ConfigDataBase data; 
+		if(!m_CachedConfigData.Find(type, data))
 		{
 			return LoadDetonatorData(type);
 		}
-		
+
 		return MOE_ConfigDataDetonator.Cast(data);
 	}
 	
+	bool GetCategoryData(string type, out MOE_ConfigDataCategory category)	
+	{	
+		MOE_ConfigDataBase cachedData;
+		return m_CachedConfigData.Find("C " + type, cachedData) && CastTo(category, cachedData);	
+	}
+
+	bool GetDestroyableObjectData(string type, out MOE_ConfigDataDestroyableObject destroyableObject)	
+	{	
+		MOE_ConfigDataBase cachedData;
+		return m_CachedConfigData.Find("D " + type, cachedData) && CastTo(destroyableObject, cachedData);	
+	}
 	
 	/////////////////////////
 	/// Loading Functions ///
@@ -113,7 +129,7 @@ class MOE_ConfigBase
 	MOE_ConfigDataExplosive LoadExplosiveData(string type)
 	{
 		MOE_ConfigDataExplosive data = new MOE_ConfigDataExplosive(type);
-		m_CachedExplosiveData.Insert(type, data);
+		m_CachedConfigData.Insert(type, data);
 		return data;
 	}
 
@@ -121,28 +137,42 @@ class MOE_ConfigBase
 	{
 
 		MOE_ConfigDataTimer data = new MOE_ConfigDataTimer(type);
-		m_CachedTriggerData.Insert(type, data);
+		m_CachedConfigData.Insert(type, data);
 		return data;
 	}
 
 	MOE_ConfigDataReceiver LoadReceiverData(string type)
 	{
 		MOE_ConfigDataReceiver data = new MOE_ConfigDataReceiver(type);
-		m_CachedTriggerData.Insert(type, data);
+		m_CachedConfigData.Insert(type, data);
 		return data;
 	}
 	
 	MOE_ConfigDataSignalSource LoadSignalSourceData(string type)
 	{
 		MOE_ConfigDataSignalSource data = new MOE_ConfigDataSignalSource(type);
-		m_CachedSignalSourceData.Insert(type, data);
+		m_CachedConfigData.Insert(type, data);
 		return data;
 	}
 	
 	MOE_ConfigDataDetonator LoadDetonatorData(string type)
 	{
 		MOE_ConfigDataDetonator data = new MOE_ConfigDataDetonator(type);
-		m_CachedSignalSourceData.Insert(type, data);
+		m_CachedConfigData.Insert(type, data);
 		return data;		
+	}
+
+	MOE_ConfigDataCategory LoadCategoryData(string type)
+	{
+		MOE_ConfigDataCategory data = new MOE_ConfigDataCategory(type);
+		m_CachedConfigData.Insert("C " + type, data);
+		return data;
+	}
+
+	MOE_ConfigDataDestroyableObject LoadDestroyableObjectData(string type)
+	{
+		MOE_ConfigDataDestroyableObject data = new MOE_ConfigDataDestroyableObject(type);
+		m_CachedConfigData.Insert("D " + type, data);
+		return data;
 	}
 }

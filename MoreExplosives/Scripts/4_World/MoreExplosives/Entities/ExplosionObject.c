@@ -7,17 +7,13 @@ class MOE_ExplosionObject : House
 	protected int m_ParticleID;
 	protected string m_AmmoType;
 	
-	void Detonate(notnull MOE_ExplosiveBase explosive, string ammoOverride = "")
+	void Detonate(notnull MOE_ExplosiveBase explosive, string ammo)
 	{
 		m_ParentExplosive = explosive;
-		string ammo; 
-		if(ammoOverride == "")
+		
+		if(!ammo)
 		{
 			ammo = m_ParentExplosive.GetAmmoType();
-		}
-		else 
-		{
-			ammo = ammoOverride;
 		}
 		
 		SetAmmoType(ammo);
@@ -44,6 +40,11 @@ class MOE_ExplosionObject : House
 #endif		
 	}	
 	
+	void SetAmmoType(string ammo)
+	{
+		m_AmmoType = ammo;
+	}
+
 	EntityAI GetSourceExplosive()
 	{
 		return m_ParentExplosive;
@@ -52,17 +53,19 @@ class MOE_ExplosionObject : House
 	void PlayParticle(string ammoType)
 	{
 		int particleID = AmmoEffects.GetAmmoParticleID(ammoType);
-		if(ParticleList.IsValidId(particleID)) 
+		if(!ParticleList.IsValidId(particleID)) 
 		{
-			vector local_orientation;
-			MOE_AmmoData ammoData = GetMOE().GetAmmoData(ammoType);
-			if(ammoData)
-			{
-				local_orientation = ammoData.ParticleOrientation;
-			}
-
-			m_ExplosionParticle = ParticleManager.GetInstance().PlayOnObject(particleID, this, vector.Zero, local_orientation);	
+			return;
 		}
+
+		vector local_orientation;
+		MOE_AmmoData ammoData = GetMOE().GetAmmoData(ammoType);
+		if(ammoData)
+		{
+			local_orientation = ammoData.ParticleOrientation;
+		}
+
+		m_ExplosionParticle = ParticleManager.GetInstance().PlayOnObject(particleID, this, vector.Zero, local_orientation);	
 	}
 	
 	void DestroyParticle(ParticleSource p)
@@ -74,12 +77,6 @@ class MOE_ExplosionObject : House
 		}
 #endif
 	}
-	
-	void SetAmmoType(string ammo)
-	{
-		m_AmmoType = ammo;
-	}
-	
 	
 	override void OnExplodeClient() {}
 	

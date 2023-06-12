@@ -59,6 +59,7 @@ class MOE_ExplosiveBase : ItemBase
 	protected bool m_Stored_IsArmed, m_Stored_IsMounted;
 	
 	protected Object m_PlacementTarget;
+	protected int m_PlacementTargetComponent;
 	
 	void MOE_ExplosiveBase() 
 	{ 
@@ -164,6 +165,16 @@ class MOE_ExplosiveBase : ItemBase
 	{
 		return m_PlacementTarget;
 	}
+
+	void SetPlacementTargetComponent(int component)
+	{
+		m_PlacementTargetComponent = component;
+	}
+	
+	int GetPlacementTargetComponent()
+	{
+		return m_PlacementTargetComponent;
+	}
 	
 	void SetIsArmed(bool isArmed)
 	{
@@ -219,11 +230,6 @@ class MOE_ExplosiveBase : ItemBase
 	
 	void Mount(Object placementTarget, int hitComponent)
 	{
-		
-		//placementTarget.AddArrow(this, hitComponent);
-		
-		
-		
 		SetPlacementTarget(placementTarget);
 		SetIsMounted(true);
 		OnMounted();
@@ -265,8 +271,8 @@ class MOE_ExplosiveBase : ItemBase
 			return;
 		}
 		
-		m_ExplosionBehaviour.Detonate(this);	
-		OnExplode(source);
+		m_ExplosionBehaviour.Detonate(this);		
+		OnExplosionInitiated(source);
 	}
 
 	void DeleteExplosive(float delay = 0.25)
@@ -321,8 +327,7 @@ class MOE_ExplosiveBase : ItemBase
 	}
 	
 	void EvaluateStateAfterLoad()
-	{
-		
+	{	
 		bool shouldBeArmed = m_Stored_IsArmed && CanBeArmed();
 		SetIsArmed(shouldBeArmed);
 		
@@ -511,10 +516,16 @@ class MOE_ExplosiveBase : ItemBase
 	
 	protected void OnDismounted() {}
 	
-	protected void OnExplode(EntityAI source = null)
-	{
-		
+	protected void OnExplosionInitiated(EntityAI source = null)
+	{	
 		string logStr = string.Format("%1 [%2] exploded", this, GetPosition().ToString());	
+
+		Object target = GetPlacementTarget();
+		if(target)
+		{
+			logStr += string.Format(", PlacementTarget: %1 [%2], PlacementTargetComponent: %3", target, target.GetPosition().ToString(), GetPlacementTargetComponent());
+		}
+
 		if(source)
 		{		
 			logStr += string.Format(", Source: %1 [%2]", source, source.GetPosition().ToString());
@@ -527,6 +538,21 @@ class MOE_ExplosiveBase : ItemBase
 		}
 		
 		Log_MOE(logStr, MOE_ELogTypes.EXPLOSIVE);
+	}
+
+	void OnExplosionObjectDetonated_MOE(MOE_ExplosionObject explosionObject, vector position, string ammo, bool canDamagePlacementTargetDirectly)
+	{
+		if(canDamagePlacementTargetDirectly)
+		{
+			GetMOE().GetDestructionSystem().HandlePlacementTargetDamage( 
+				this, 
+				explosionObject,
+				position,
+				GetPlacementTarget(), 
+				GetPlacementTargetComponent(), 
+				"",
+				ammo);
+		}	
 	}
 
 	protected void OnTriggerAttached(EntityAI entity)
@@ -638,20 +664,9 @@ class MOE_ExplosiveBase : ItemBase
 		return IsArmed();
 	}
 	
-	bool CanBeMountedOn(Object placementTarget)
+	bool CanBeMountedOn(Object placementTarget, int component)
 	{
-		int mode = GetMountingMode();
-		switch(mode)
-		{
-			case MOE_EExplosiveMountingModes.BASEBUILDINGONLY:
-				return placementTarget && placementTarget.IsInherited(BaseBuildingBase);
-
-			case MOE_EExplosiveMountingModes.SELECTEDONLY:
-				return placementTarget && GetGame().ConfigGetInt(string.Format("%1 %2 MOE_Settings Mountable %3", CFG_VEHICLESPATH, placementTarget.GetType(), GetType()));
-		}
-
-		
-		return true;	
+		return GetMOE().GetDestructionSystem().IsExplosiveCompatible(this, placementTarget, component);	
 	}
 	
 	bool CanBeDismounted()

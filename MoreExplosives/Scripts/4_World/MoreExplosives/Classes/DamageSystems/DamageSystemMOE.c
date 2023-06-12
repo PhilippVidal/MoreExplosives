@@ -1,11 +1,11 @@
 class MOE_DamageSystemMOE : MOE_DamageSystemDayZ
 {
-	override bool CanDealDamage(EntityAI target, int component, string dmgZone, MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, string ammo)
+	override bool CanDealDamage(EntityAI target, int component, string dmgZone, MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, string ammo, vector position)
 	{
 		return target && target.IsInherited(BaseBuildingBase) && super.CanDealDamage(target, component, dmgZone, explosive, explosiveObject, ammo);
 	}
 	
-	override bool DealDamage(EntityAI target, int component, string dmgZone, MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, string ammo)
+	override bool DealDamage(EntityAI target, int component, string dmgZone, MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, string ammo, vector position)
 	{
 		//No need to check if null or not -> already checked in CanDealDamage
 		BaseBuildingBase baseBuildingBase = BaseBuildingBase.Cast(target);

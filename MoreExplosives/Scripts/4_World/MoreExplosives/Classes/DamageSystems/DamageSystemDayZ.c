@@ -1,6 +1,6 @@
 class MOE_DamageSystemDayZ : MOE_DamageSystemBase
 {
-	override bool CanDealDamage(EntityAI target, int component, string dmgZone, MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, string ammo)
+	override bool CanDealDamage(EntityAI target, int component, string dmgZone, MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, string ammo, vector position)
 	{
 		if(!target)
 		{

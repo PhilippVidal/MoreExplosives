@@ -179,6 +179,11 @@ class MoreExplosives
 	///// Damage Dealing /////
 	//////////////////////////
 	
+	bool IsUsingDestructionSystem(MOE_EDestructionSystemTypes type)
+	{
+		return m_DestructionSystem && (m_DestructionSystem.GetType() == type);
+	}
+
 	protected void InitializeDestructionSystem()
 	{
 		int destructionSystemType = 0; 
@@ -209,34 +214,6 @@ class MoreExplosives
 	{
 		return m_DamageSystem;
 	}
-	
-	//return true -> deal custom damage only or no damage at all
-	//return false -> deal vanilla damage 
-	bool TryHandleDamage(EntityAI target, int component, string dmgZone, EntityAI source, string ammo)
-	{
-		if(!m_DamageSystem)
-		{
-			return false;
-		}
-		
-		MOE_ExplosionObject explosiveObject;
-		if(!CastTo(explosiveObject, source))
-		{
-			return IsMOERaidingOnlyEnabled();
-		}
-		
-		MOE_ExplosiveBase explosive;
-		if(!CastTo(explosive, explosiveObject.GetSourceExplosive()))
-		{
-			Log_MOE(string.Format("MoreExplosives::HandleDamage -> MOE_ExplosionObject does not have a valid source explosive (%1)", explosiveObject.GetSourceExplosive()), MOE_ELogTypes.ERROR);
-			return false;
-		}
-
-		return !m_DamageSystem.CanDealDamage(target, component, dmgZone, explosive, explosiveObject, ammo) || m_DamageSystem.DealDamage(target, component, dmgZone, explosive, explosiveObject, ammo);
-	}
-	
-	
-
 	
 	////////////////
 	///// Misc /////
@@ -296,7 +273,6 @@ class MoreExplosives
 			string partPath = string.Format("%1 %2", constructionPath, mainPart);
 			
 			string part;
-			int id;
 			int partCount = GetGame().ConfigGetChildrenCount(partPath);
 			for (int j = 0; j < partCount; ++j)
 			{

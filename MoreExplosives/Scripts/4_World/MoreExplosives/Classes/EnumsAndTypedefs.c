@@ -41,11 +41,13 @@ enum MOE_EExplosiveMountingModes
 {
 	EVERYWHERE, 
 	BASEBUILDINGONLY,
-	SELECTEDONLY
+	SELECTEDONLY,
+	ANYTARGET
 }
 
 enum MOE_EDestructionSystemTypes
 {
+	NONE,
 	DAYZ,	 
 	MOE,	
 	BC		
@@ -58,6 +60,7 @@ enum MOE_EDamageSystemTypes
 	MOE,
 	BC
 }
+
 
 typedef Param2<int, int> MOE_NetworkID;
 typedef Param4<int, int, int, int> MOE_PersistentID;
