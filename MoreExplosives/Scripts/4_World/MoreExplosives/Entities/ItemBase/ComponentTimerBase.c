@@ -533,7 +533,7 @@ class MOE_ComponentTimerBase : MOE_ComponentTriggerBase
 	
 	override bool CanOpenUI()
 	{
-		MOE_ConfigDataTimer configData = GetConfigData_Timer();
+		MOE_TimerData configData = GetConfigData_Timer();
 		if(configData && (configData.MinTimer == configData.MaxTimer))
 		{
 			return false;
@@ -636,7 +636,7 @@ class MOE_ComponentTimerBase : MOE_ComponentTriggerBase
 	{		
 		output = ConfigGetString("descriptionShort");
 		
-		MOE_ConfigDataTimer timerData = GetConfigData_Timer();
+		MOE_TimerData timerData = GetConfigData_Timer();
 		
 		float minTimer = timerData.MinTimer;
 		float maxTimer = timerData.MaxTimer;
@@ -659,12 +659,12 @@ class MOE_ComponentTimerBase : MOE_ComponentTriggerBase
 	
 	override void LoadConfigData()
 	{
-		m_ConfigData = GetMOE().GetTimerData(GetType());
+		m_ConfigData = GetMOEConfig().GetTimerData(GetType());
 	}
 	
-	MOE_ConfigDataTimer GetConfigData_Timer()
+	MOE_TimerData GetConfigData_Timer()
 	{
-		return MOE_ConfigDataTimer.Cast(GetConfigData());
+		return MOE_TimerData.Cast(GetConfigData());
 	}
 	
 	float GetMaxTimer()

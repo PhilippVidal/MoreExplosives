@@ -57,14 +57,15 @@ class MOE_Hologram : Hologram
 		float hitFraction;
 		int hitComponent;
 		
-		m_HasRaycastHit_MOE = DoPlacementRaycast_MOE(m_Player, position, normal, hitFraction, m_PlacementTarget_MOE, m_HitComponent_MOE);
+		m_HasRaycastHit_MOE = DoPlacementRaycast_MOE(m_Player, position, normal, hitFraction, m_PlacementTarget_MOE, m_HitComponent_MOE, m_Player);
 		//Print(string.Format("Hit Object = %1, Component Hit = %2", m_PlacementInfo_MOE.PlacementTarget, m_PlacementInfo_MOE.HitComponent));
+			
 		MOE_ExplosiveBase explosive = MOE_ExplosiveBase.Cast(m_Projection); 
 		
 		if(m_HasRaycastHit_MOE && explosive)
 		{
-			SetProjectionOrientation( GetExplosivePlacementOrientation_MOE(explosive, position, normal) );
-			SetProjectionPosition( GetExplosivePlacementPosition_MOE(explosive, position, normal) );
+			SetProjectionPosition(GetExplosivePlacementPosition_MOE(explosive, position, normal) + normal * GetTargetPlacementOffset_MOE(explosive, position, normal, m_PlacementTarget_MOE, m_HitComponent_MOE));
+			SetProjectionOrientation( GetExplosivePlacementOrientation_MOE(explosive, position, normal) );		
 			
 #ifdef MOE_DEBUG_PLACEMENT
 			Debug_DrawExplosivePlacementVectors();
@@ -82,6 +83,11 @@ class MOE_Hologram : Hologram
 		m_Projection.OnHologramBeingPlaced(m_Player);
 	}
 		
+	int GetExplosivePhxInteractionLayers()
+	{
+		return PhxInteractionLayers.AI | PhxInteractionLayers.BUILDING | PhxInteractionLayers.ITEM_LARGE | PhxInteractionLayers.FENCE | PhxInteractionLayers.TERRAIN | PhxInteractionLayers.FIREGEOM;	
+	}
+	
 	protected bool DoPlacementRaycast_MOE(notnull PlayerBase player, out vector hitPosition, out vector hitNormal, out float hitFraction, out Object hitObject, out int component, Object ignore = null)
 	{
 		
@@ -101,9 +107,9 @@ class MOE_Hologram : Hologram
 		{
 			to = from + camDirection * maxProjectionDistance;
 		}
-
+	
 		
-		if(!DayZPhysics.RayCastBullet(from, to, MOE_Constants.PlacementCollisionLayers, ignore, hitObject, hitPosition, hitNormal, hitFraction))
+		if(!DayZPhysics.RayCastBullet(from, to, GetExplosivePhxInteractionLayers(), ignore, hitObject, hitPosition, hitNormal, hitFraction))
 		{
 			return false;
 		}
@@ -135,6 +141,11 @@ class MOE_Hologram : Hologram
 	protected float GetRaycastDistance_MOE()
 	{
 		return MOE_Constants.DISTANCE_MOUNT_EXPLOSIVE;
+	}
+	
+	protected float GetTargetPlacementOffset_MOE(MOE_ExplosiveBase explosive, vector hitPosition, vector hitNormal, Object target, int hitComponent)
+	{
+		return 0;
 	}
 	
 	protected vector GetExplosivePlacementPosition_MOE(MOE_ExplosiveBase explosive, vector hitPosition, vector hitNormal)

@@ -1,3 +1,6 @@
+//This config contains the default configuration for the mod 
+//You can use it as a reference for which settings are available
+//Don't just copy-paste the entire thing, that would be useless
 class CfgPatches
 {
     class MoreExplosives_Config
@@ -38,33 +41,48 @@ class CfgMods
 
 class CfgMoreExplosives 
 {
-	//Can only object with door-like construction parts be raided? (i.e., any built construction part has 'is_gate = 1' set)
-	doorRaidOnlyEnabled = 0;
-
-	//Is custom damage for base building object enabled? 
-	//If set to 0 explosives will act like vanilla dayz explosives
-	customDamageEnabled = 1;
-
 	//Can base building objects only be raided with MOE explosives? 
 	raidOnlyWithMOE = 0;
 
-	//Should locks be deleted after an object has successfully been raided?
+	//Is raiding only possible during the set timeslots? 
+	raidSchedulingEnabled = 0;
+
+	//Can only object with door-like construction parts be raided? (i.e., any built construction part has 'is_gate = 1' set)
+	doorRaidOnlyEnabled = 0;
+
+	//Should locks be deleted after an object has successfully been raided? 
+	//Without this enabled vanilla dayz locks will usually drop to the ground when the object/part gets destroyed
 	deleteLocks = 0;
 
 	//Should the base be destroyed after an object has been successfully been raided? 
+	//Some parts on base building objects are marked as being a "base" for the object (e.g., the two wooden logs on each side of vanilla dayz fences)
+	//Those parts are generally unaffected by damage, but enabling this option will delete them automatially once all other parts are destroyed
 	destroyBaseAfterDestruction = 0;
 
-	//Is raiding only possible during the set timeslots? 
-	raidSchedulingEnabled = 0;
-	
+	//Should explosives damage their placement target directly instead of using other methods of hit detection? 
+	//In certain situations (e.g., having a base inside a building) hit detection using an explosion might not detect the target properly 
+	//Enabling this option will essentially guarantee damage evaluation for the placement target in 
+	//such a scenario, though hit detection for other objects in the vicinity will still be affected
+	damagePlacementTargetDirectly = 1;
+
+
+	//Should explosives be attached to whatever target (if any) they are placed on?
+	//For example explosives that are placed on the gate of a fence will move with the gate when it is opened
+	parentExplosivesToTarget = 1;
+
+
+	//0 = No Area Damage will be dealt to base building objects (also turn on damagePlacementTargetDirectly for this!)
+	//1 = Any base building object hit by a vanilla dayz explosion will be hit
+	//2 = Any base building object that is within the set radius will be hit (manual sphere check)
+	areaDamageMode = 1;
+
 	//Which damage system should be used to damage base building objects? 
-	//0 = DayZ	(Vanilla DayZ damage calculation)
-	//1 = MOE	(Custom modified vanilla damage)
-	//2 = BC	(Simple integer-based damage to whole object)
-	damageSystem = 1;
+	//0 = DayZ	(Vanilla)
+	//1 = MOE	(Modified)
+	selectedDamageSystem = 1;
 
 	//Which base building objects should be cached on 
-	//server start-up instead of during server session?
+	//server start-up instead of during the server session?
 	//Useful for objects that have many different damage zones and 
 	//therefore a lot of data to cache, which could lead to performance issues 
 	//when loaded during the actual server session  
@@ -77,6 +95,7 @@ class CfgMoreExplosives
 	{
 		//Offset in hours from UTC (Coordinated Universal Time)
 		//Does not automatically account for summer/winter/daylight savings time!
+		//e.g. UTC Time = 5pm, Local Time = 7pm => offset = 2
 		timeZoneOffset = 1;
 		
 		//Override this if you want to easily apply the same time slots to each day 
@@ -209,17 +228,28 @@ class CfgVehicles
 			timeToMount = 20;
 			timeToDismount = 20;
 
+			//How likely is an explosion once the explosive becomes ruined? [0.0 - 1.0]
 			explodeOnRuinedChance = 0.0;
+			//How likely is it for the attachments (i.e. an attached trigger) to become ruined? [0.0 - 1.0]
 			ruinAttachmentsOnRuinedChance = 1.0;
 
+			//Does the explosive have to be mounted before it can explode? 
 			hasToBeMounted = 0;
+			//Can the explosive take damage while mounted or armed?
 			canTakeDamageWhileMounted = 0;
 			canTakeDamageWhileArmed = 0;
+			//Can this explosive only be used to raid doors? (based on whether an object has a construction part with is_gate = 1)
 			canOnlyRaidDoors = 0;
 			
+			//Can this explosive only damage the target is was placed on, no other base building object?
 			canOnlyDamagePlacementTarget = 0;
+			//Can this explosive only be mounted during a raid schedule slot?
 			canOnlyMountDuringSchedule = 0;
 			
+			//On which targets can the explosive be mounted? 
+			//0 = Everywhere
+			//1 = Only on Base Building Objects
+			//2 = Only on selected objects
 			mountingMode = 0;
 			
 			explosionBehaviour = "MOE_SingleExplosion";
@@ -248,7 +278,7 @@ class CfgVehicles
 		class MOE_Settings
 		{		
 			timeToArm = 15;
-			timetoDisarm = 15;
+			timetoDisarm = 5;
 			timeToDefuse = 20;
 			timeToMount = 20;
 			timeToDismount = 20;
@@ -473,7 +503,7 @@ class CfgVehicles
 			class Mountable
 			{
 				MOE_Explosive_Homemade = 1;
-				MOE_Explosive_Military = 1;
+				MOE_Explosive_Military = 0;
 			};
 
 			//Manually determined order in which the damage zones are damaged

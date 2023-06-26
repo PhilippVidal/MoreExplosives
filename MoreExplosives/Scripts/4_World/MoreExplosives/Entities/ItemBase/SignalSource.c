@@ -8,7 +8,7 @@
 class MOE_SignalSource : MOE_StateSyncedItemBase 
 {
 	protected ref array<ref MOE_NetworkID> m_ConnectedReceivers;	
-	protected ref MOE_ConfigDataSignalSource m_ConfigData;
+	protected ref MOE_SignalSourceData m_ConfigData;
 	
 	override void Init_MOE()
 	{
@@ -40,7 +40,7 @@ class MOE_SignalSource : MOE_StateSyncedItemBase
 	
 	void LoadConfigData()
 	{
-		m_ConfigData = GetMOE().GetSignalSourceData(GetType());
+		m_ConfigData = GetMOEConfig().GetSignalSourceData(GetType());
 	}
 	
 		bool IsTurnedOn()
@@ -473,7 +473,7 @@ class MOE_SignalSource : MOE_StateSyncedItemBase
 	//======= Access Cached Config Data ======
 	//========================================
 	
-	MOE_ConfigDataSignalSource GetConfigData()
+	MOE_SignalSourceData GetConfigData()
 	{
 		if(!m_ConfigData)
 		{

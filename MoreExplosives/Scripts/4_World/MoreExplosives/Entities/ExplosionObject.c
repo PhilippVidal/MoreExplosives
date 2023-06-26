@@ -1,4 +1,4 @@
-//This gets spawned by a ExplosionBehaviour when an explosion occurs (due to an MOE_Explosive detonating)
+//This gets spawned by an ExplosionBehaviour when an explosion occurs (due to an MOE_Explosive detonating)
 //should delete itself after it exploded 
 class MOE_ExplosionObject : House
 {
@@ -58,13 +58,9 @@ class MOE_ExplosionObject : House
 			return;
 		}
 
-		vector local_orientation;
-		MOE_AmmoData ammoData = GetMOE().GetAmmoData(ammoType);
-		if(ammoData)
-		{
-			local_orientation = ammoData.ParticleOrientation;
-		}
-
+		MOE_AmmoData ammoData = GetMOEConfig().GetAmmoData(ammoType);
+		vector local_orientation = ammoData.ParticleOrientation;
+		
 		m_ExplosionParticle = ParticleManager.GetInstance().PlayOnObject(particleID, this, vector.Zero, local_orientation);	
 	}
 	

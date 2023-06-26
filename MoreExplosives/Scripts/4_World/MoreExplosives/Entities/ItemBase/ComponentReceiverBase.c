@@ -220,7 +220,7 @@ class MOE_ComponentReceiverBase : MOE_ComponentTriggerBase
 	{		
 		output = ConfigGetString("descriptionShort");
 		
-		MOE_ConfigDataReceiver receiverData = GetConfigData_Receiver();
+		MOE_ReceiverData receiverData = GetConfigData_Receiver();
 		
 		output += string.Format("\n%1:\t%2", "#STR_MOE_Receiver_MaxConnectedSources", receiverData.MaxConnectedSignalSources);		
 		output += string.Format("\n%1: %2", "#STR_MOE_Receiver_CanBeConnectedToWhenArmed", MoreExplosives.GetYesNo(receiverData.CanBeConnectedToWhenExplosiveArmed));
@@ -285,12 +285,12 @@ class MOE_ComponentReceiverBase : MOE_ComponentTriggerBase
 	
 	override void LoadConfigData()
 	{
-		m_ConfigData = GetMOE().GetReceiverData(GetType());
+		m_ConfigData = GetMOEConfig().GetReceiverData(GetType());
 	}
 	
-	MOE_ConfigDataReceiver GetConfigData_Receiver()
+	MOE_ReceiverData GetConfigData_Receiver()
 	{
-		return MOE_ConfigDataReceiver.Cast(GetConfigData());
+		return MOE_ReceiverData.Cast(GetConfigData());
 	}
 	
 	float GetMaxConnectedSignalSources()

@@ -14,6 +14,8 @@ modded class ActionConstructor
 
 		//Placement 
 		actions.Insert(MOE_ActionMountExplosive);
+		actions.Insert(MOE_ActionMountExplosiveInvalid);
+		
 		actions.Insert(MOE_ActionDismountExplosive);
 		actions.Insert(MOE_ActionToggleExplosivePlacement);
 

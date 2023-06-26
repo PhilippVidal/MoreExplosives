@@ -1,7 +1,4 @@
 //Action that open the UI of a trigger component, should be added to a trigger component or explosive
-//TODO: 
-// - make useable when targeting explosive
-
 class MOE_ActionOpenTriggerComponentUIInHands : ActionSingleUseBase
 {
 	void MOE_ActionOpenTriggerComponentUIInHands()

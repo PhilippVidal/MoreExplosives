@@ -3,7 +3,7 @@
 //as well as arm the explosive whenever required
 class MOE_ComponentTriggerBase : MOE_ComponentBase 
 {	
-	protected ref MOE_ConfigDataTriggerBase m_ConfigData;
+	protected ref MOE_TriggerData m_ConfigData;
 	
 	override void Fini_MOE()
 	{
@@ -159,7 +159,7 @@ class MOE_ComponentTriggerBase : MOE_ComponentBase
 	//======= Access Cached Config Data ======
 	//========================================
 	
-	MOE_ConfigDataTriggerBase GetConfigData()
+	MOE_TriggerData GetConfigData()
 	{
 		if(!m_ConfigData)
 		{

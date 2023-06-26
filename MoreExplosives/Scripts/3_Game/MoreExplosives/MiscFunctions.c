@@ -140,5 +140,90 @@ class HDSN_MiscFunctions
 			
 		return "0";			
 	}
+	
+	static void GetValidTimerInputsFromStrings(out string minutes, out string seconds, int min, int max, int maxMinutesDigits = 2)
+	{
+		//Make numbers only and clamp length of inputs
+		minutes = ClampStringByLength(HDSN_MiscFunctions.MakeNumerical(minutes).ToString(), maxMinutesDigits);
+		seconds = ClampStringByLength(HDSN_MiscFunctions.MakeNumerical(seconds).ToString(), 2);
+
+		//Clamp numeric values so they are valid and actually make sense 
+		int timeToSet = GetClampedTimerInput(minutes.ToInt(), seconds.ToInt(), min, max, maxMinutesDigits);
+		
+		minutes = HDSN_MiscFunctions.GetMinutes(timeToSet).ToString();
+		seconds = HDSN_MiscFunctions.GetSeconds(timeToSet).ToString();
+				
+		minutes = FillStringWithZeros(minutes, maxMinutesDigits);	
+		seconds = FillStringWithZeros(seconds, 2);			
+	}
+	
+	static void GetValidTimerInputsFromInts(int minutes, int seconds, out string minutesStr, out string secondsStr, int min, int max, int maxMinutesDigits = 2)
+	{
+		//Make numbers only and clamp length of inputs
+		minutesStr = ClampStringByLength(minutes.ToString(), maxMinutesDigits);
+		secondsStr = ClampStringByLength(seconds.ToString(), 2);
+
+		//Clamp numeric values so they are valid and actually make sense 
+		int timeToSet = GetClampedTimerInput(minutesStr.ToInt(), secondsStr.ToInt(), min, max, maxMinutesDigits);
+		
+		minutesStr = HDSN_MiscFunctions.GetMinutes(timeToSet).ToString();
+		secondsStr = HDSN_MiscFunctions.GetSeconds(timeToSet).ToString();
+				
+		minutesStr = FillStringWithZeros(minutesStr, maxMinutesDigits);	
+		secondsStr = FillStringWithZeros(secondsStr, 2);			
+	}
+	
+	static int GetClampedTimerInput(int minutes, int seconds, int min, int max, int maxMinutesDigits)
+	{
+		string maxedDigits;
+		for(int i = 0; i < maxMinutesDigits; i++)
+		{
+			maxedDigits += "9";
+		}
+		
+		//Clamp individual inputs
+		int mins =  Math.Clamp(minutes, 0, maxedDigits.ToInt());
+		int secs = Math.Clamp(seconds, 0, 59);
+		
+		//Clamp combined output
+		return Math.Clamp(mins * 60 + secs, min, max);
+	}
+	
+	static string ClampStringByLength(string str, int length)
+	{
+		int stringLength = str.Length();
+		if(stringLength <= length)
+		{
+			return str;
+		}
+		
+		return str.Substring(stringLength - length, length);
+	}
+	
+	static string FillStringWithZeros(string str, int targetLength)
+	{
+		int difference = targetLength - str.Length();
+		for(int i = 0; i < difference; i++)
+		{
+			str = "0" + str;
+		}
+		
+		return str;
+	}
+	
+	static int GetPivotFromComponent(Object object, int component)
+	{
+		return object.GetBonePivot(object.GetFireGeometryLevel(), component);
+	}
+
+	static bool ApproximatelyEqual(float a, float b, float epsilon)
+	{
+		return Math.AbsFloat(a - b) < epsilon;
+	}
+	
+	static bool ApproximatelyEqual(vector a, vector b, float epsilon)
+	{
+		return ApproximatelyEqual(a[0], b[0], epsilon) && ApproximatelyEqual(a[1], b[1], epsilon) && ApproximatelyEqual(a[2], b[2], epsilon);
+	}
 }
 #endif

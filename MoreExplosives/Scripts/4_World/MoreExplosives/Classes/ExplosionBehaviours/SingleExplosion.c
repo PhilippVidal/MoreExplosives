@@ -7,7 +7,7 @@ class MOE_SingleExplosion : MOE_ExplosionBehaviourBase
 		super.Detonate(explosive);
 		
 		//Notify that behaviour has been triggered
-		OnBehaviourTriggered();
+		OnBehaviourTriggered(explosive);
 		
 		//Spawn explosion wherever you want them 
 		//in this case a single explosion at the position of the explosive
@@ -16,7 +16,7 @@ class MOE_SingleExplosion : MOE_ExplosionBehaviourBase
 		MOE_ExplosionObject explosionObject = MOE_ExplosionObject.Cast(GetGame().CreateObject("MOE_ExplosionObject", position));
 		explosionObject.SetOrientation(explosive.GetExplosionOrientation());		
 		explosionObject.Detonate(explosive, ammo);
-		NotifyExplosive(explosive, explosionObject, ammo, true);
+		NotifyExplosive(explosive, explosionObject, ammo);
 
 		//Notify that the behaviour has finished executing,
 		//i.e., that the explosive can now be safely deleted 

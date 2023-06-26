@@ -76,7 +76,8 @@ class MOE_TimerWidget : UIScriptedMenu
 				{
 					maxTimer = m_ParentTimer.GetMaxTimer();
 				}	
-				GetMOE().GetValidTimerInputsFromStrings(minutes, seconds, minTimer, maxTimer, 2);				
+				
+				HDSN_MiscFunctions.GetValidTimerInputsFromStrings(minutes, seconds, minTimer, maxTimer, 2);				
 				m_EditBoxMinutes.SetText(minutes);
 				m_EditBoxSeconds.SetText(seconds);
 				UpdateTextWithInput();
@@ -121,7 +122,7 @@ class MOE_TimerWidget : UIScriptedMenu
 					seconds += wheel;
 				}
 			
-				MoreExplosives.GetValidTimerInputsFromInts(minutes, seconds, minStr, secStr, minTimer, maxTimer, 2);				
+				HDSN_MiscFunctions.GetValidTimerInputsFromInts(minutes, seconds, minStr, secStr, minTimer, maxTimer, 2);				
 				m_EditBoxMinutes.SetText(minStr);
 				m_EditBoxSeconds.SetText(secStr);
 				UpdateTextWithInput();
@@ -140,7 +141,7 @@ class MOE_TimerWidget : UIScriptedMenu
 					minTimer = m_ParentTimer.GetMinTimer();
 				}	
 			
-				MoreExplosives.GetValidTimerInputsFromInts(minutes, seconds, minStr, secStr, minTimer, maxTimer, 2);
+				HDSN_MiscFunctions.GetValidTimerInputsFromInts(minutes, seconds, minStr, secStr, minTimer, maxTimer, 2);
 				m_EditBoxMinutes.SetText(minStr);
 				m_EditBoxSeconds.SetText(secStr);
 				UpdateTextWithInput();
@@ -183,7 +184,7 @@ class MOE_TimerWidget : UIScriptedMenu
 		}	
 		
 		string minStr, secStr;
-		MoreExplosives.GetValidTimerInputsFromInts(minutes, seconds, minStr, secStr, minTimer, maxTimer, 2);
+		HDSN_MiscFunctions.GetValidTimerInputsFromInts(minutes, seconds, minStr, secStr, minTimer, maxTimer, 2);
 		m_TextMinutes.SetText(minStr);
 		m_TextSeconds.SetText(secStr);
 		m_EditBoxMinutes.SetText(minStr);

@@ -1,8 +1,5 @@
 //Action that disconnects the signal source from a receiver, should be added to a signal source (e.g., a detonator)
 //Can be done when looking at a receiver or explosive, while having a signal source in hand
-//TODO: 
-// - update text 
-
 class MOE_ActionDisconnectReceiverCB : ActionContinuousBaseCB
 {
 	override void CreateActionComponent()

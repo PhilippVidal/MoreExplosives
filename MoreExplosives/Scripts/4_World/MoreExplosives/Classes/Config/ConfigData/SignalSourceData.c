@@ -1,15 +1,15 @@
-class MOE_DetonatorDataBase : MOE_SignalSourceDataBase
+class MOE_SignalSourceData : MOE_ConfigDataBase
 {
-	ref array<int> DetonatorModes;
-}
+	int MaxConnectedReceivers;
+	float MaxRange;
+	ref array<string> ConnectableReceivers; 
+	float FailureChance;
+	float TriggerOnRuinedChance;
 
-class MOE_DetonatorDataConfig : MOE_DetonatorDataBase
-{
-	override void Init(string type)
+    override void Init(string type)
 	{
 		super.Init(type);
-	
-		//Signal source values
+		
 		//Set default values
 		MaxConnectedReceivers = 1;
 		MaxRange = 50;
@@ -31,24 +31,12 @@ class MOE_DetonatorDataConfig : MOE_DetonatorDataBase
 		
 		path = basePath + "triggerOnRuinedChance";
 		if(GetGame().ConfigIsExisting(path)) TriggerOnRuinedChance = GetGame().ConfigGetFloat(path);
-		
-		
-		//Detonator values
-		//Set default values
-		DetonatorModes = new array<int>();
-		
-		//Load values from config if they exist
-		string basePath = GetBasePath(type);	
-		string path = basePath + "detonatorModes";	
-		if(GetGame().ConfigIsExisting(path)) GetGame().ConfigGetIntArray(path, DetonatorModes);			
-	}	
-	
-#ifdef MOE_DEBUG_CONFIG	
+	}
+
+#ifdef MOE_DEBUG_CONFIG
 	override void PrintLoadedData(string type)
 	{	
 		super.PrintLoadedData(type);
-		
-		//Signal source values
 		Print(string.Format("MaxConnectedReceivers: %1", MaxConnectedReceivers));
 		Print(string.Format("MaxRange: %1", MaxRange));
 		
@@ -60,13 +48,6 @@ class MOE_DetonatorDataConfig : MOE_DetonatorDataBase
 		
 		Print(string.Format("FailureChance: %1", FailureChance));		
 		Print(string.Format("TriggerOnRuinedChance: %1", TriggerOnRuinedChance));
-			
-		//Detonator values
-		Print(string.Format("DetonatorModes: Count = %1", DetonatorModes.Count()));
-		for(int i = 0; i < DetonatorModes.Count(); i++)
-		{
-			Print(string.Format(" [%1]: %2", i, DetonatorModes[i]));
-		}
 	}
-#endif	
+#endif
 }

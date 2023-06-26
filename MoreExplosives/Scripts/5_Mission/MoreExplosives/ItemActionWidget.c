@@ -11,7 +11,6 @@ modded class ItemActionsWidget
         }
     }
 
-    //TODO: only show widgets that are needed 
 	protected void SetDetonatorValues(MOE_DetonatorBase detonator, string subDescWidget, string upWidget, string downWidget, string itemWidget, string quantityPBWidget, string quantityTextWidget)
 	{		
 		Widget itemSubDescWidget;		

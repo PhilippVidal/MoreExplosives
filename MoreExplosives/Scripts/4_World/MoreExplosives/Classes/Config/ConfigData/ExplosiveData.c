@@ -1,4 +1,4 @@
-class MOE_ExplosiveDataBase : MOE_ConfigDataBase
+class MOE_ExplosiveData : MOE_ConfigDataBase
 {
 	float TimeToArm;		
 	float TimeToDisarm;		
@@ -32,11 +32,7 @@ class MOE_ExplosiveDataBase : MOE_ConfigDataBase
 	ref array<string> ArmTools;
 	ref array<string> DisarmTools;
 	ref array<string> DefuseTools;
-}
 
-
-class MOE_ExplosiveDataConfig : MOE_ExplosiveDataBase
-{
 	override void Init(string type)
 	{
 		super.Init(type);
@@ -206,4 +202,3 @@ class MOE_ExplosiveDataConfig : MOE_ExplosiveDataBase
 	}
 #endif	
 }
-

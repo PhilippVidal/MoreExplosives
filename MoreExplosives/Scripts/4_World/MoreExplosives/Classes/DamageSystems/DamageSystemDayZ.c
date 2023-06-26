@@ -1,6 +1,6 @@
 class MOE_DamageSystemDayZ : MOE_DamageSystemBase
 {
-	override bool CanDealDamage(EntityAI target, int component, string dmgZone, MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, string ammo, vector position)
+	override bool CanDealDamage(MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, vector explosionPosition, Object target, int component, string dmgZone, string ammo)
 	{
 		if(!target)
 		{
@@ -12,22 +12,17 @@ class MOE_DamageSystemDayZ : MOE_DamageSystemBase
 			return false;
 		}
 		
-		if(GetMOE().IsRaidSchedulingEnabled() && !GetMOE().IsInRaidSchedule())
+		if(GetMOESettings().IsRaidSchedulingEnabled && !GetMOE().GetRaidScheduling().IsInSchedule())
 		{
 			return false;
 		}
 		
-		BaseBuildingBase baseBuildingBase;
-		if( (GetMOE().IsDoorRaidOnlyEnabled() || explosive.CanOnlyRaidDoors()) && (!CastTo(baseBuildingBase, target) || !baseBuildingBase.HasGate_MOE()) )
+		BaseBuildingBase baseBuildingBase;	
+		if( (GetMOESettings().IsDoorRaidOnlyEnabled || explosive.CanOnlyRaidDoors()) && (!CastTo(baseBuildingBase, target) || !baseBuildingBase.HasGate_MOE()) )
 		{
 			return false;		
 		}
 		
-		return super.CanDealDamage(target, component, dmgZone, explosive, explosiveObject, ammo);
-	}
-	
-	override int GetMOEType()
-	{
-		return MOE_EDamageSystemTypes.DAYZ;
+		return super.CanDealDamage(explosive, explosiveObject, explosionPosition, target, component, dmgZone, ammo);
 	}
 }

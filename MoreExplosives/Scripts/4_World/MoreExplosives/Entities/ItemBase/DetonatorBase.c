@@ -17,7 +17,7 @@ class MOE_DetonatorBase : MOE_SignalSource
 	
 	override void LoadConfigData()
 	{
-		m_ConfigData = GetMOE().GetDetonatorData(GetType());
+		m_ConfigData = GetMOEConfig().GetDetonatorData(GetType());
 	}
 	
 	
@@ -179,7 +179,7 @@ class MOE_DetonatorBase : MOE_SignalSource
 	{		
 		output = ConfigGetString("descriptionShort");
 		
-		MOE_ConfigDataDetonator detonatorData = GetConfigData_Detonator();
+		MOE_DetonatorData detonatorData = GetConfigData_Detonator();
 		output += string.Format("\n%1:\t%2", "#STR_MOE_Detonator_MaxConnectedReceivers", detonatorData.MaxConnectedReceivers);
 		output += string.Format("\n%1:\t%2m", "#STR_MOE_Detonator_MaxRange", detonatorData.MaxRange);
 		output += string.Format("\n%1:\n", "#STR_MOE_Detonator_ConnectableReceivers");
@@ -204,9 +204,9 @@ class MOE_DetonatorBase : MOE_SignalSource
 	//======= Access Cached Config Data ======
 	//========================================
 	
-	MOE_ConfigDataDetonator GetConfigData_Detonator()
+	MOE_DetonatorData GetConfigData_Detonator()
 	{
-		return MOE_ConfigDataDetonator.Cast(GetConfigData());
+		return MOE_DetonatorData.Cast(GetConfigData());
 	}
 	
 	array<int> GetDetonatorModes()

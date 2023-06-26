@@ -45,22 +45,36 @@ enum MOE_EExplosiveMountingModes
 	ANYTARGET
 }
 
-enum MOE_EDestructionSystemTypes
-{
-	NONE,
-	DAYZ,	 
-	MOE,	
-	BC		
-}
-
 enum MOE_EDamageSystemTypes
 {
-	NONE,
 	DAYZ,
-	MOE,
-	BC
+	MOE
 }
 
+enum MOE_EAreaDamageModes
+{
+	DEACTIVATED, 
+	DAYZ_EXPLOSION, 
+	MANUAL_SPHERE
+}
+
+enum MOE_EHitDetectionFlags
+{
+	VANILLA = 1,
+	MANUAL_SPHERE = 2,
+	DIRECT_TARGET = 4		
+}
+
+enum MOE_EMountingFailureReasons
+{
+	SUCCESS,
+	OTHER,
+	EXPLOSIVE_MOUNTABLE,
+	RAYCAST_HIT,
+	EXPLOSIVE_PLACEABLE,
+	RAID_SCHEDULE,
+	TARGET_MOUNTABLE	
+}
 
 typedef Param2<int, int> MOE_NetworkID;
 typedef Param4<int, int, int, int> MOE_PersistentID;

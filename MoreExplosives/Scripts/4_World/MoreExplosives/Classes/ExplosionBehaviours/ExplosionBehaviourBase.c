@@ -11,10 +11,10 @@ class MOE_ExplosionBehaviourBase
 	{
 		
 	}
-
-	void NotifyExplosive(notnull MOE_ExplosiveBase explosive, notnull MOE_ExplosionObject explosionObject, string ammo, bool canDamagePlacementTargetDirectly)
+	
+	void NotifyExplosive(notnull MOE_ExplosiveBase explosive, notnull MOE_ExplosionObject explosionObject, string ammo, int ignoredHitDetectionFlags = 0)
 	{
-		explosive.OnExplosionObjectDetonated_MOE(explosionObject, explosionObject.GetPosition(), ammo, canDamagePlacementTargetDirectly);
+		explosive.OnExplosionObjectDetonated(explosionObject, ammo, ignoredHitDetectionFlags);
 	}
 	
 	//Has to be called to initiate deletion of the 'parent' explosive (default behaviour)

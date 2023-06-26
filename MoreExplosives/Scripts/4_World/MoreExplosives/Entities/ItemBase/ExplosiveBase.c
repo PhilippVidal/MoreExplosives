@@ -1,60 +1,20 @@
 //Base class for all explosives 
 //Explosives can have different types of triggers 
 //Assigned Explosion Behaviour determines 'how' it explodes
-/*
-modded class Fence 
-{
-	override void AddArrow(Object arrow, int componentIndex)
-	{
-		int pivot = GetBonePivot(GetFireGeometryLevel(), componentIndex);
-
-		vector parentTransMat[4];
-		vector arrowTransMat[4];
-		
-		if (pivot == -1)
-		{
-			GetTransform(parentTransMat);
-		}
-		else
-		{
-			GetBoneTransformWS(pivot, parentTransMat);
-		}
-		
-		arrow.GetTransform(arrowTransMat);
-		Math3D.MatrixInvMultiply4(parentTransMat, arrowTransMat, arrowTransMat);
-		
-		// orthogonalize matrix - parent might be skewed
-		Math3D.MatrixOrthogonalize4(arrowTransMat);
-		
-		arrow.SetTransform(arrowTransMat);
-		
-		AddChild(arrow, pivot);
-		Print("Added child");
-		
-		vector resTransMat[4];
-		arrow.GetTransform(resTransMat);
-		
-		
-		Print("Added child2");
-	}
-}
-*/
-
-
 class MOE_ExplosiveBase : ItemBase
 {	
 	protected const string SLOT_TRIGGER = "Trigger_MOE";
 	
 	protected ref Timer m_DeleteTimer;	
 	protected ref MOE_ExplosionBehaviourBase m_ExplosionBehaviour;
-	protected ref MOE_ConfigDataExplosive m_ConfigData;
+	protected ref MOE_ExplosiveData m_ConfigData;
 	protected MOE_ComponentTriggerBase m_Trigger;
 	protected MOE_TriggerLight m_TriggerLight;
 	
 	protected int m_State, m_PrevState; 
 	
 	//used for keeping track of who interacted with the trigger/explosive 
-	protected string m_PlayerName, m_PlayerSteam64
+	protected string m_PlayerName, m_PlayerSteam64;
 
 	protected bool m_Stored_IsArmed, m_Stored_IsMounted;
 	
@@ -228,18 +188,74 @@ class MOE_ExplosiveBase : ItemBase
 		}
 	}
 	
-	void Mount(Object placementTarget, int hitComponent)
+	void Mount(Object placementTarget, int hitComponent, vector position, vector orientation)
 	{
 		SetPlacementTarget(placementTarget);
+		SetPlacementTargetComponent(hitComponent);
 		SetIsMounted(true);
 		OnMounted();
+			
+		if(!GetMOESettings().IsParentExplosivesToTargetEnabled)
+		{
+			return;
+		}
+		
+		BaseBuildingBase baseBuildingBase;
+		if(CastTo(baseBuildingBase, placementTarget) && !baseBuildingBase.AllowsExplosiveAttaching_MOE(hitComponent))
+		{
+			return;
+		}
+		
+		GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(AttachExplosive, 500, false, placementTarget, hitComponent, position, orientation);		
 	}
-	
+
 	void Dismount()
 	{
 		SetPlacementTarget(null);
 		SetIsMounted(false);
 		OnDismounted();
+		
+		IEntity parent = GetParent();
+		if(parent)
+		{
+			parent.RemoveChild(this, true);
+		}
+		
+		if(m_TriggerLight)
+		{
+			m_TriggerLight.AttachOnObject(this, GetLightPosition_Local());
+		}
+	}
+	
+	bool AttachExplosive(Object target, int component, vector position, vector orientation)
+	{
+		if(!target)
+		{
+			return false;
+		}
+		
+		int pivot = HDSN_MiscFunctions.GetPivotFromComponent(target, component);
+	
+		vector targetTransformMat[4];	
+		if (pivot == -1)
+		{
+			target.GetTransform(targetTransformMat);
+		}
+		else
+		{
+			target.GetBoneTransformWS(pivot, targetTransformMat);
+		}
+		
+		
+		vector transformMat[4];		
+		Math3D.YawPitchRollMatrix(orientation, transformMat);
+		transformMat[3] = position;
+		
+		Math3D.MatrixInvMultiply4(targetTransformMat, transformMat, transformMat);
+		Math3D.MatrixOrthogonalize4(transformMat);
+		SetTransform(transformMat);		
+		
+		return target.AddChild(this, pivot);
 	}
 	
 	protected void SetTriggerSlotLock(bool value)
@@ -271,8 +287,8 @@ class MOE_ExplosiveBase : ItemBase
 			return;
 		}
 		
-		m_ExplosionBehaviour.Detonate(this);		
 		OnExplosionInitiated(source);
+		m_ExplosionBehaviour.Detonate(this);				
 	}
 
 	void DeleteExplosive(float delay = 0.25)
@@ -540,20 +556,31 @@ class MOE_ExplosiveBase : ItemBase
 		Log_MOE(logStr, MOE_ELogTypes.EXPLOSIVE);
 	}
 
-	void OnExplosionObjectDetonated_MOE(MOE_ExplosionObject explosionObject, vector position, string ammo, bool canDamagePlacementTargetDirectly)
+	// ignoredHitDetectionFlags are used for determining what the explosion object can be used for 
+	// e.g., if MOE_EHitDetectionFlags.DIRECT_TARGET is not set, the explosion can damage the target directly
+	// if there is an explosion behaviour that creates multiple explosions this can be used to turn off hit detection 
+	// e.g., there is a main explosion that should damage the target and there are a few other `cosmetic` explosions that shouldn't damage the placement target
+	void OnExplosionObjectDetonated(MOE_ExplosionObject explosionObject, string ammo, int ignoredHitDetectionFlags)
 	{
-		if(canDamagePlacementTargetDirectly)
+		if(!HDSN_MiscFunctions.IsBitSet(ignoredHitDetectionFlags, MOE_EHitDetectionFlags.DIRECT_TARGET) && GetMOESettings().IsDamagePlacementTargetDirectlyEnabled)
 		{
-			GetMOE().GetDestructionSystem().HandlePlacementTargetDamage( 
+			GetMOE().GetDestructionSystem().HandleDirectDamage(
 				this, 
 				explosionObject,
-				position,
+				explosionObject.GetPosition(),
 				GetPlacementTarget(), 
 				GetPlacementTargetComponent(), 
 				"",
 				ammo);
+		}
+		
+		if(!HDSN_MiscFunctions.IsBitSet(ignoredHitDetectionFlags, MOE_EHitDetectionFlags.MANUAL_SPHERE) && GetMOESettings().AreaDamageMode == MOE_EAreaDamageModes.MANUAL_SPHERE)
+		{
+			GetMOE().GetDestructionSystem().DealAreaDamage(this, explosionObject, explosionObject.GetPosition(), ammo);
 		}	
 	}
+	
+	
 
 	protected void OnTriggerAttached(EntityAI entity)
 	{
@@ -664,9 +691,10 @@ class MOE_ExplosiveBase : ItemBase
 		return IsArmed();
 	}
 	
-	bool CanBeMountedOn(Object placementTarget, int component)
-	{
-		return GetMOE().GetDestructionSystem().IsExplosiveCompatible(this, placementTarget, component);	
+	bool CanBeMountedOn(Object placementTarget, int component, vector position)
+	{		
+		MOE_DestructionSystem destructionSystem = GetMOE().GetDestructionSystem();
+		return destructionSystem.IsPlacementAllowed(this, placementTarget, component, position) && destructionSystem.IsExplosiveCompatible(this, placementTarget, component, position);	
 	}
 	
 	bool CanBeDismounted()
@@ -1039,6 +1067,8 @@ class MOE_ExplosiveBase : ItemBase
 		
 		//Placement 
 		AddAction(MOE_ActionMountExplosive);
+		AddAction(MOE_ActionMountExplosiveInvalid);
+		
 		AddAction(MOE_ActionDismountExplosive);
 		AddAction(MOE_ActionToggleExplosivePlacement);
 	
@@ -1052,8 +1082,7 @@ class MOE_ExplosiveBase : ItemBase
 	}
 	
 	override bool NameOverride(out string output)
-	{
-		
+	{	
 		GetGame().ObjectGetDisplayName(this, output);	
 		
 		if(IsMounted())
@@ -1071,25 +1100,30 @@ class MOE_ExplosiveBase : ItemBase
 		return false;
 	}
 	
-	override bool DescriptionOverride(out string output)
-	{		
+	
+	protected void GenerateDescriptionString(out string output)
+	{
 		output = ConfigGetString("descriptionShort") + "\n#STR_MOE_Explosive_Usage_Description\n";
-		
-		MOE_ConfigDataExplosive explosiveData = GetConfigData();
-		
-		if(GetMOE().IsRaidSchedulingEnabled())
+
+		if(GetMOESettings().IsRaidSchedulingEnabled)
 		{
-			output += string.Format("\n%1: %2", "#STR_MOE_Raiding_Allowed_Schedule", MoreExplosives.GetYesNo(GetMOE().IsInRaidSchedule()));
+			output += string.Format("\n%1: %2", "#STR_MOE_Raiding_Allowed_Schedule", MoreExplosives.GetYesNo(GetMOE().GetRaidScheduling().IsInSchedule()));
 		}
-		
-		if(explosiveData.CanOnlyRaidDoors || GetMOE().IsDoorRaidOnlyEnabled())
+
+		MOE_ExplosiveData explosiveData = GetConfigData();	
+		if(explosiveData.CanOnlyRaidDoors || GetMOESettings().IsDoorRaidOnlyEnabled)
 		{
-			output += string.Format("\n%1: %2", "#STR_MOE_Explosive_CanOnlyRaidDoors", "#STR_MOE_Yes");
+			output += string.Format("\n%1.", "#STR_MOE_Explosive_CanOnlyRaidDoors");
 		}
-		
+
 		if(explosiveData.HasToBeMounted)
 		{
-			output += string.Format("\n%1: %2", "#STR_MOE_Explosive_HasToBeMounted", "#STR_MOE_Yes");
+			output += string.Format("\n%1.", "#STR_MOE_Explosive_HasToBeMounted");
+		}
+
+		if(explosiveData.CanOnlyDamagePlacementTarget)
+		{
+			output += string.Format("\n%1.", "#STR_MOE_Explosive_CanOnlyDamagePlacementTarget");
 		}
 
 			
@@ -1099,89 +1133,40 @@ class MOE_ExplosiveBase : ItemBase
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToMount", explosiveData.TimeToMount);
 		output += string.Format("\n%1:\t%2s", "#STR_MOE_Explosive_TimeToDismount", explosiveData.TimeToDismount);
 	
-	
-		array<string> tools = explosiveData.ArmTools;
-		int toolCount = tools.Count();
-		int i;
+
 		int maxDisplayed = 3;
-		string displayName;
-		if(toolCount != 0)
+		array<string> tools = explosiveData.ArmTools;
+		if(tools && tools.Count() != 0)
 		{
-			output += string.Format("\n%1:\n", "#STR_MOE_Explosive_ArmTools");
-			toolCount = Math.Min(toolCount, maxDisplayed);
-			for(i = 0; i < toolCount; i++)
-			{
-				if(tools[i] == "Unarmed")
-				{
-					displayName = "#STR_MOE_Unarmed";	
-				}
-				else
-				{
-					displayName = MiscGameplayFunctions.GetItemDisplayName(tools[i]);
-				}
-				
-				output += string.Format("--- %1\n", displayName);
-			}
-				
-			if(toolCount > 5)
-			{
-				output += "\n...\n";
-			}
+			output += string.Format(
+						"\n%1:\n%2", 
+						"#STR_MOE_Explosive_ArmTools", 
+						MoreExplosives.GetToolDisplayNamesFormatted(tools, maxDisplayed));
+		}
+
+		tools = explosiveData.DisarmTools;
+		if(tools && tools.Count() != 0)
+		{
+			output += string.Format(
+						"\n%1:\n%2", 
+						"#STR_MOE_Explosive_DisarmTools", 
+						MoreExplosives.GetToolDisplayNamesFormatted(tools, maxDisplayed));
 		}
 		
-		tools = explosiveData.DisarmTools;
-		toolCount = tools.Count();
-		if(toolCount != 0)
-		{
-			output += string.Format("\n%1:\n", "#STR_MOE_Explosive_DisarmTools");
-			toolCount = Math.Min(toolCount, maxDisplayed);
-			for(i = 0; i < toolCount; i++)
-			{
-				
-				if(tools[i] == "Unarmed")
-				{
-					displayName = "#STR_MOE_Unarmed";	
-				}
-				else
-				{
-					displayName = MiscGameplayFunctions.GetItemDisplayName(tools[i]);
-				}
-				
-				output += string.Format("--- %1\n", displayName);
-			}
-				
-			if(toolCount > 5)
-			{
-				output += "\n...\n";
-			}
-		}
 		
 		tools = explosiveData.DefuseTools;
-		toolCount = tools.Count();	
-		if(toolCount != 0)
+		if(tools && tools.Count() != 0)
 		{
-			output += string.Format("\n%1:\n", "#STR_MOE_Explosive_DefuseTools");
-			toolCount = Math.Min(toolCount, maxDisplayed);
-			for(i = 0; i < toolCount; i++)
-			{
-				if(tools[i] == "Unarmed")
-				{
-					displayName = "#STR_MOE_Unarmed";	
-				}
-				else
-				{
-					displayName = MiscGameplayFunctions.GetItemDisplayName(tools[i]);
-				}
-				
-				output += string.Format("--- %1\n", displayName);
-			}
-				
-			if(toolCount > 5)
-			{
-				output += "\n...\n";
-			}
+			output += string.Format(
+						"\n%1:\n%2", 
+						"#STR_MOE_Explosive_DefuseTools", 
+						MoreExplosives.GetToolDisplayNamesFormatted(tools, maxDisplayed));
 		}	
-		
+	}
+
+	override bool DescriptionOverride(out string output)
+	{		
+		GenerateDescriptionString(output);
 		return true;
 	}
 	
@@ -1279,10 +1264,10 @@ class MOE_ExplosiveBase : ItemBase
 	
 	void LoadConfigData()
 	{
-		m_ConfigData = GetMOE().GetExplosiveData(GetType());
+		m_ConfigData = GetMOEConfig().GetExplosiveData(GetType());
 	}
 	
-	MOE_ConfigDataExplosive GetConfigData()
+	MOE_ExplosiveData GetConfigData()
 	{
 		if(!m_ConfigData)
 		{
