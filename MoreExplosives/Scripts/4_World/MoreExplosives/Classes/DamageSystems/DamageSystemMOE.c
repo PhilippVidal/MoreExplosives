@@ -1,47 +1,37 @@
-class MOE_DamageSystemMOE : MOE_DamageSystemDayZ
+class MOE_DamageSystemMOE : MOE_DamageSystemBase
 { 
-	override bool CanDealDamage(MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, vector explosionPosition, Object target, int component, string dmgZone, string ammo)
+	override bool CanDealDamage(MOE_HitInfo hitInfo)
 	{
-		return target && target.IsInherited(BaseBuildingBase) && super.CanDealDamage(explosive, explosiveObject, explosionPosition, target, component, dmgZone, ammo);
+		return hitInfo.Target && super.CanDealDamage(hitInfo);
 	}
 	
-	override bool DealDamage(MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, vector explosionPosition, Object target, int component, string dmgZone, string ammo)
+	override bool DealDamage(MOE_HitInfo hitInfo)
 	{
-		//No need to check if null or not -> already checked in CanDealDamage
-		BaseBuildingBase baseBuildingBase = BaseBuildingBase.Cast(target);
+		OnDamageDealingStarted(hitInfo);
 		
-		EntityAI lock = baseBuildingBase.GetLock_MOE();
+		EntityAI lock = hitInfo.Target.GetLock_MOE();
 		
-		DealDamageToEntity(ammo, explosive, EntityAI.Cast(target), explosiveObject.GetPosition());
+		DealDamageToEntity(hitInfo);
 		
 		//Did the target have a lock before damage was dealt that is now not attached anymore?
-		if(lock && GetMOESettings().IsDeleteLocksEnabled && !baseBuildingBase.GetLock_MOE())
+		if(lock && GetMOESettings().IsDeleteLocksEnabled && !hitInfo.Target.GetLock_MOE())
 		{
 			lock.Delete();
 		}
 		
-		bool wasFullyDestroyed = baseBuildingBase.IsConstructionDestroyed_MOE();
-		
-		string logStr = string.Format("Object: %1 [%2, wasFullyDestroyed: %3], Source: %4", target, target.GetPosition().ToString(), wasFullyDestroyed, explosive);	
-		string playerName, playerSteam64;
-		if(explosive.GetInteractingPlayer(playerName, playerSteam64))
+		hitInfo.WasFullyDestroyed = hitInfo.Target.IsConstructionDestroyed_MOE();		
+		if(hitInfo.WasFullyDestroyed && GetMOESettings().IsDestroyBaseAfterDestructionEnabled)
 		{
-			logStr += string.Format(", Player: %1 [%2]", playerName, playerSteam64);
+			hitInfo.Target.DestroyConstruction();
 		}
 		
-		Log_MOE(logStr, MOE_ELogTypes.RAID);
-		
-		if(wasFullyDestroyed && GetMOESettings().IsDestroyBaseAfterDestructionEnabled)
-		{
-			target.Delete();
-		}
-		
+		OnDamageDealingEnded(hitInfo);
 		return true;
 	}
 
-	bool DealDamageToEntity(string ammo, EntityAI source, EntityAI entity, vector explosionPosition)
+	bool DealDamageToEntity(MOE_HitInfo hitInfo)
 	{		
-		MOE_AmmoData ammoData = GetMOEConfig().GetAmmoData(ammo);
+		MOE_AmmoData ammoData = GetMOEConfig().GetAmmoData(hitInfo.Ammo);
 		if(!ammoData)
 		{
 			return false;
@@ -56,16 +46,14 @@ class MOE_DamageSystemMOE : MOE_DamageSystemDayZ
 			return false;
 		}
 
-		string entityType = entity.GetType();
+		string entityType = hitInfo.Target.GetType();
 		MOE_EntityData entityData = MOE_EntityData.Cast(GetMOEConfig().GetCachedData(entityType));
-		
 		if(!entityData)
 		{
-			entityData = GetMOEConfig().LoadEntityData(entityType, entity.GetEntityDamageZoneMap().GetKeyArray());
+			entityData = GetMOEConfig().LoadEntityData(entityType, hitInfo.Target.GetEntityDamageZoneMap().GetKeyArray());
 		}		
 		
-		string explosiveType = source.GetType();
-		
+		string explosiveType = hitInfo.Explosive.GetType();	
 		float entityMultiplier = entityData.GetEntityMultiplier(explosiveType);
 		if(entityMultiplier == 0.0)
 		{
@@ -91,13 +79,13 @@ class MOE_DamageSystemMOE : MOE_DamageSystemDayZ
 			}
 			
 			zoneName = zoneData.Name;
-			distanceMultiplier = GetDistanceMultiplier(entity, source, explosionPosition, maxDamageRange, fullDamageRange, zoneName);
+			distanceMultiplier = GetDistanceMultiplier(hitInfo.Target, hitInfo.Explosive, hitInfo.Explosive.GetPosition(), maxDamageRange, fullDamageRange, zoneName);
 			if(distanceMultiplier == 0.0)
 			{
 				continue;
 			}
 			
-			if(!CanDealDamageToDmgZone(source, entity, zoneName))
+			if(!CanDealDamageToDmgZone(hitInfo.Target, hitInfo.Explosive, zoneName))
 			{
 				continue;
 			}
@@ -108,12 +96,12 @@ class MOE_DamageSystemMOE : MOE_DamageSystemDayZ
 				continue;
 			}
 			
-			if(entity.IsInherited(BaseBuildingBase) && !CanDealDamageBaseBuildingBase(source, BaseBuildingBase.Cast(entity), zoneData))
+			if(!CanDealDamageBaseBuildingBase(hitInfo.Explosive, hitInfo.Target, zoneData))
 			{
 				continue;
 			}
 			
-			if(DealDamageToDamageZone(source, entity, zoneName, ammo, ammoData.Damage, entityMultiplier, dmgZoneMultiplier, distanceMultiplier))
+			if(DealDamageToDamageZone(hitInfo.Explosive, hitInfo.Target, zoneName, hitInfo.Ammo, ammoData.Damage, entityMultiplier, dmgZoneMultiplier, distanceMultiplier))
 			{
 				wasDamageDealt = true;
 			}		
@@ -150,7 +138,13 @@ class MOE_DamageSystemMOE : MOE_DamageSystemDayZ
 			
 		Print("" + outStr);
 #endif
+		MOE_DamageInfo damageInfo = new MOE_DamageInfo();
+		damageInfo.HealthBefore = healthBefore;
+		damageInfo.HealthAfter = newHealth;
+		damageInfo.Damage = dealtDamage;
+		damageInfo.Zone = dmgZone;
 		
+		OnDamageDealt(damageInfo);
 		return true;
 	}
 	

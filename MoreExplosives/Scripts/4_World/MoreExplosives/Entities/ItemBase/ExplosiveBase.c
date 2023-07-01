@@ -562,21 +562,24 @@ class MOE_ExplosiveBase : ItemBase
 	// e.g., there is a main explosion that should damage the target and there are a few other `cosmetic` explosions that shouldn't damage the placement target
 	void OnExplosionObjectDetonated(MOE_ExplosionObject explosionObject, string ammo, int ignoredHitDetectionFlags)
 	{
-		if(!HDSN_MiscFunctions.IsBitSet(ignoredHitDetectionFlags, MOE_EHitDetectionFlags.DIRECT_TARGET) && GetMOESettings().IsDamagePlacementTargetDirectlyEnabled)
+		if(!HDSN_MiscFunctions.IsBitSet(ignoredHitDetectionFlags, MOE_EHitDetectionFlags.DIRECT_TARGET))
 		{
-			GetMOE().GetDestructionSystem().HandleDirectDamage(
-				this, 
-				explosionObject,
-				explosionObject.GetPosition(),
-				GetPlacementTarget(), 
-				GetPlacementTargetComponent(), 
-				"",
-				ammo);
+			MOE_HitInfo hitInfo = new MOE_HitInfo();
+			hitInfo.Explosive = this; 
+			hitInfo.ExplosionObject = explosionObject;
+			hitInfo.Target = BaseBuildingBase.Cast(GetPlacementTarget());
+			hitInfo.HitComponent = GetPlacementTargetComponent();
+			hitInfo.HitPosition = explosionObject.GetPosition();
+			hitInfo.Ammo = ammo;
+			hitInfo.TargetZone = "";
+			hitInfo.IsAreaHit = false;
+					
+			GetMOE().GetDestructionSystem().HandleExplosionHit(hitInfo);
 		}
 		
 		if(!HDSN_MiscFunctions.IsBitSet(ignoredHitDetectionFlags, MOE_EHitDetectionFlags.MANUAL_SPHERE) && GetMOESettings().AreaDamageMode == MOE_EAreaDamageModes.MANUAL_SPHERE)
 		{
-			GetMOE().GetDestructionSystem().DealAreaDamage(this, explosionObject, explosionObject.GetPosition(), ammo);
+			GetMOE().GetDestructionSystem().DealAreaDamage(this, explosionObject, ammo);
 		}	
 	}
 	
@@ -693,8 +696,14 @@ class MOE_ExplosiveBase : ItemBase
 	
 	bool CanBeMountedOn(Object placementTarget, int component, vector position)
 	{		
-		MOE_DestructionSystem destructionSystem = GetMOE().GetDestructionSystem();
-		return destructionSystem.IsPlacementAllowed(this, placementTarget, component, position) && destructionSystem.IsExplosiveCompatible(this, placementTarget, component, position);	
+		MOE_HitInfo hitInfo = new MOE_HitInfo();
+		hitInfo.Explosive = this;
+		hitInfo.Target = BaseBuildingBase.Cast(placementTarget);
+		hitInfo.HitComponent = component;
+		hitInfo.HitPosition = position;
+		
+		MOE_DestructionSystemBase destructionSystem = GetMOE().GetDestructionSystem();
+		return destructionSystem.IsExplosiveCompatible(hitInfo);	
 	}
 	
 	bool CanBeDismounted()

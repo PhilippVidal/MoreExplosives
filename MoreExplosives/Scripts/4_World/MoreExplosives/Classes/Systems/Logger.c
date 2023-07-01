@@ -3,6 +3,11 @@ static void Log_MOE(string message, int type = 0)
 	MOE_Logger.GetInstance().Log(message, type);
 }
 
+static void Log_MOE(array<string> messages, int type = 0)
+{
+	MOE_Logger.GetInstance().Log(messages, type);
+}
+
 
 class MOE_Logger 
 {
@@ -11,6 +16,7 @@ class MOE_Logger
 	const string LOG_SUB_PATH = "Logs/";
 	protected string m_LogName;
 	protected string m_FullLogPath;
+	protected FileHandle m_LogFileHandle;
 	
 	void MOE_Logger()
 	{
@@ -20,21 +26,68 @@ class MOE_Logger
 		m_FullLogPath = string.Format("%1/%2", MoreExplosives.MOD_BASE_PATH + LOG_SUB_PATH, GetLogName());
 	}
 	
-	void Log(string message)
+	void Write(string message)
 	{
-		SetupLogDirectories();
-		
-		FileHandle fileHandle = OpenFile(m_FullLogPath, FileMode.APPEND);		
-		if(fileHandle != 0)
-		{
-			FPrintln(fileHandle, message);		
-			CloseFile(fileHandle);
-		}
+		FPrint(m_LogFileHandle, message);
 	}
 	
-	void Log(string message, int type)
+	void WriteLine(string message)
 	{
-		Log(string.Format("[%1] %2 %3", HDSN_MiscFunctions.GetCurrentDateAndTime(), GetLogPrefix(type), message));
+		FPrintln(m_LogFileHandle, message);	
+	}
+	
+	bool GetLogFileHandle(out FileHandle logFileHandle)
+	{
+		SetupLogDirectories();
+		m_LogFileHandle = OpenFile(m_FullLogPath, FileMode.APPEND);
+		return m_LogFileHandle != 0;
+	}
+	
+	void Log(string message, int type = -1)
+	{
+		if(!GetLogFileHandle(m_LogFileHandle))
+		{
+			return;
+		}
+		
+		string prefix;
+		
+		if(type > -1)
+		{
+			prefix = string.Format(
+						"[%1] %2 ", 
+						HDSN_MiscFunctions.GetCurrentDateAndTime(), 
+						GetLogPrefix(type));
+		} 
+		
+		WriteLine(prefix + message);
+		
+		CloseFile(m_LogFileHandle);
+	}
+	
+	void Log(array<string> messages, int type = -1)
+	{		
+		if(!GetLogFileHandle(m_LogFileHandle))
+		{
+			return;
+		}
+		
+		string prefix;
+		
+		if(type > -1)
+		{
+			prefix = string.Format(
+						"[%1] %2 ", 
+						HDSN_MiscFunctions.GetCurrentDateAndTime(), 
+						GetLogPrefix(type));
+		} 
+		
+		foreach(string message : messages)
+		{
+			WriteLine(prefix + message);
+		}
+	
+		CloseFile(m_LogFileHandle);
 	}
 		
 	string GetLogName()

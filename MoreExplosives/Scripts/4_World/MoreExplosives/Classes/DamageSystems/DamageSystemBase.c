@@ -1,19 +1,23 @@
+class MOE_DamageInfo
+{
+	float HealthBefore;
+	float HealthAfter;
+	float Damage;
+	string Zone;
+}
+
 class MOE_DamageSystemBase 
 {
-	bool CanDealDamage(MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, vector explosionPosition, Object target, int component, string dmgZone, string ammo)
+	protected ref array<string> m_DamageLogStrings;
+	
+	bool CanDealDamage(MOE_HitInfo hitInfo)
 	{
-		BaseBuildingBase baseBuildingBase;
-		if(!CastTo(baseBuildingBase,target))
+		if(hitInfo.Target)
 		{
 			return false;
 		}
 		
-		if(!super.CanDealDamage(explosive, explosiveObject, explosionPosition, target, component, dmgZone, ammo))
-		{
-			return false;
-		}
-		
-		if(explosive.CanOnlyDamagePlacementTarget() && (target != explosive.GetPlacementTarget()))
+		if(hitInfo.Explosive.CanOnlyDamagePlacementTarget() && (hitInfo.Target != hitInfo.Explosive.GetPlacementTarget()))
 		{
 			return false;
 		}
@@ -23,7 +27,7 @@ class MOE_DamageSystemBase
 			return false;
 		}
 		
-		if( (GetMOESettings().IsDoorRaidOnlyEnabled || explosive.CanOnlyRaidDoors()) && !baseBuildingBase.HasGate_MOE())
+		if((GetMOESettings().IsDoorRaidOnlyEnabled || hitInfo.Explosive.CanOnlyRaidDoors()) && !hitInfo.Target.HasGate_MOE())
 		{
 			return false;		
 		}
@@ -33,8 +37,57 @@ class MOE_DamageSystemBase
 	
 	//True = custom damage handled, don't deal vanilla damage 
 	//False = deal vanilla damage (mainly used for MOE_DamageSystemDayZ)
-	bool DealDamage(MOE_ExplosiveBase explosive, MOE_ExplosionObject explosiveObject, vector explosionPosition, Object target, int component, string dmgZone, string ammo)
-	{
+	bool DealDamage(MOE_HitInfo hitInfo)
+	{	
+		OnDamageDealingStarted(hitInfo);
+		//OnDamageDealt(hitInfo);
+		OnDamageDealingEnded(hitInfo);
 		return false;
+	}
+	
+	bool DamageTargetDirectly()
+	{
+		return true;
+	}
+	
+	void OnDamageDealingStarted(MOE_HitInfo hitInfo)
+	{
+		m_DamageLogStrings = new array<string>();
+		
+		string playerName, playerSteam64;
+		hitInfo.Explosive.GetInteractingPlayer(playerName, playerSteam64);
+			
+		string logString = string.Format(
+							"Object damaged:\nPlayer: %1 [%2],\nTarget: %3 [%4],\n Source: %6 [%7]\n",
+							playerName,
+							playerSteam64,
+							hitInfo.Target, 
+							hitInfo.Target.GetPosition().ToString(), 
+							hitInfo.WasFullyDestroyed, 
+							hitInfo.Explosive, 
+							hitInfo.Explosive.GetPosition().ToString());
+		
+		m_DamageLogStrings.Insert(logString);
+	}
+	
+	void OnDamageDealt(MOE_DamageInfo damageInfo)
+	{	
+		string logString = string.Format("--- Damage dealt to %1: %2, Health Before: %3, Health After: %4\n",
+							damageInfo.Zone,
+							damageInfo.Damage,
+							damageInfo.HealthBefore,
+							damageInfo.HealthAfter);
+		
+		m_DamageLogStrings.Insert(logString);
+	}
+	
+	void OnDamageDealingEnded(MOE_HitInfo hitInfo)
+	{
+		//string logString = string.Format("---%1 wasFullyDestroyed = %2", hitInfo.Target, hitInfo.WasFullyDestroyed);
+		//m_DamageLogStrings.Insert(logString);
+		
+		Log_MOE(m_DamageLogStrings, MOE_ELogTypes.RAID);
+		
+		delete m_DamageLogStrings;
 	}
 }

@@ -112,13 +112,13 @@ class MOE_RaidScheduling : MOE_RaidSchedulingBase
 	
 	int GetTimeZoneOffset()
 	{
-		return GetGame().ConfigGetInt(MoreExplosives.CFG_MOE + "RaidScheduling timeZoneOffset"); 
+		return GetGame().ConfigGetInt(MoreExplosives.CFG_MOE + " " + "RaidScheduling timeZoneOffset"); 
 	}
 	
 	//value % 2^n == value & (2^n - 1)
 	bool GetTimeSlots(int weekday, out array<float> timeSlots)
 	{ 
-		GetGame().ConfigGetFloatArray(MoreExplosives.CFG_MOE + "RaidScheduling " + GetWeekdayName(Math.Clamp(weekday, 0, 6)) + " timeSlots", timeSlots);
+		GetGame().ConfigGetFloatArray(MoreExplosives.CFG_MOE + " RaidScheduling " + GetWeekdayName(Math.Clamp(weekday, 0, 6)) + " timeSlots", timeSlots);
 		
 		return timeSlots && timeSlots.Count() && !(timeSlots.Count() & 1);
 	}

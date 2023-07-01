@@ -1,11 +1,11 @@
 class MOE_ModSettings
 {
+	
     bool IsMOERaidingOnlyEnabled;
-    bool IsRaidSchedulingEnabled;
+   	bool IsRaidSchedulingEnabled;
     bool IsDoorRaidOnlyEnabled;
     bool IsDeleteLocksEnabled;
     bool IsDestroyBaseAfterDestructionEnabled;
-	bool IsDamagePlacementTargetDirectlyEnabled;
 	bool IsParentExplosivesToTargetEnabled;
 	int AreaDamageMode; 
     
@@ -17,67 +17,65 @@ class MOE_ModSettings
 
     void Init()
     {
-        string cfgPath = MoreExplosives.CFG_MOE + "raidOnlyWithMOE";
-		if(GetGame().ConfigIsExisting(cfgPath))
+		string cfgPath = MoreExplosives.CFG_MOE + " ";
+        string path = cfgPath + "raidOnlyWithMOE";
+		if(GetGame().ConfigIsExisting(path))
 		{
-			IsMOERaidingOnlyEnabled = GetGame().ConfigGetInt(cfgPath) != 0;
+			IsMOERaidingOnlyEnabled = GetGame().ConfigGetInt(path) != 0;
 		}
 		
-		cfgPath = MoreExplosives.CFG_MOE + "raidSchedulingEnabled";
-		if(GetGame().ConfigIsExisting(cfgPath))
+		path = cfgPath + "raidSchedulingEnabled";
+		if(GetGame().ConfigIsExisting(path))
 		{
-			IsRaidSchedulingEnabled = GetGame().ConfigGetInt(cfgPath) != 0;
+			IsRaidSchedulingEnabled = GetGame().ConfigGetInt(path) != 0;
 		}
 			
-		cfgPath = MoreExplosives.CFG_MOE + "doorRaidOnlyEnabled";
-		if(GetGame().ConfigIsExisting(cfgPath))
+		path = cfgPath + "doorRaidOnlyEnabled";
+		if(GetGame().ConfigIsExisting(path))
 		{
-			IsDoorRaidOnlyEnabled = GetGame().ConfigGetInt(cfgPath) != 0;
+			IsDoorRaidOnlyEnabled = GetGame().ConfigGetInt(path) != 0;
 		}
 		
-		cfgPath = MoreExplosives.CFG_MOE + "deleteLocks";
-		if(GetGame().ConfigIsExisting(cfgPath))
+		path = cfgPath + "deleteLocks";
+		if(GetGame().ConfigIsExisting(path))
 		{
-			IsDeleteLocksEnabled = GetGame().ConfigGetInt(cfgPath) != 0;
+			IsDeleteLocksEnabled = GetGame().ConfigGetInt(path) != 0;
 		}
 		
-		cfgPath = MoreExplosives.CFG_MOE + "destroyBaseAfterDestruction";
-		if(GetGame().ConfigIsExisting(cfgPath))
+		path = cfgPath + "destroyBaseAfterDestruction";
+		if(GetGame().ConfigIsExisting(path))
 		{
-			IsDestroyBaseAfterDestructionEnabled = GetGame().ConfigGetInt(cfgPath) != 0;
-		}
-
-		cfgPath = MoreExplosives.CFG_MOE + "damagePlacementTargetDirectly";
-		if(GetGame().ConfigIsExisting(cfgPath))
-		{
-			IsDamagePlacementTargetDirectlyEnabled = GetGame().ConfigGetInt(cfgPath) != 0;
+			IsDestroyBaseAfterDestructionEnabled = GetGame().ConfigGetInt(path) != 0;
 		}
 		
-		cfgPath = MoreExplosives.CFG_MOE + "parentExplosivesToTarget";
-		if(GetGame().ConfigIsExisting(cfgPath))
+		path = cfgPath + "parentExplosivesToTarget";
+		if(GetGame().ConfigIsExisting(path))
 		{
-			IsParentExplosivesToTargetEnabled = GetGame().ConfigGetInt(cfgPath) != 0;
+			IsParentExplosivesToTargetEnabled = GetGame().ConfigGetInt(path) != 0;
 		}
 		
-		cfgPath = MoreExplosives.CFG_MOE + "areaDamageMode";
-		if(GetGame().ConfigIsExisting(cfgPath))
+		path = cfgPath + "areaDamageMode";
+		if(GetGame().ConfigIsExisting(path))
 		{
-			AreaDamageMode = GetGame().ConfigGetInt(cfgPath);
+			AreaDamageMode = GetGame().ConfigGetInt(path);
 		}
     }
 
 	void AfterInit()
 	{
-		string logStr = string.Format("MOE instance has been created!\n	GENERAL SETTINGS:\n	%1\n %2\n %3\n %4\n %5\n %6\n %7\n %8",
+		Log_MOE(GetLogString(), MOE_ELogTypes.CONFIG);
+	}
+	
+	string GetLogString()
+	{
+		return string.Format("MOE instance has been created!\n	GENERAL SETTINGS:\n	%1\n %2\n %3\n %4\n %5\n %6\n %7",
 							"\n		IsMOERaidingOnlyEnabled = " + IsMOERaidingOnlyEnabled,
 							"\n		IsRaidSchedulingEnabled = " + IsRaidSchedulingEnabled,
 							"\n		IsDoorRaidOnlyEnabled = " + IsDoorRaidOnlyEnabled,
 							"\n		IsDeleteLocksEnabled = " + IsDeleteLocksEnabled,
 							"\n		IsDestroyBaseAfterDestructionEnabled = " + IsDestroyBaseAfterDestructionEnabled,
-							"\n		IsDamagePlacementTargetDirectlyEnabled = " + IsDamagePlacementTargetDirectlyEnabled,
 							"\n		IsParentExplosivesToTargetEnabled = " + IsParentExplosivesToTargetEnabled,
 							"\n		AreaDamageMode = " + AreaDamageMode);
-
-		Log_MOE(logStr, MOE_ELogTypes.CONFIG);
 	}
+
 }

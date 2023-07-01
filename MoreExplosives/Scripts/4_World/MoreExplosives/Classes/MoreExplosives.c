@@ -18,11 +18,12 @@ class MoreExplosives
     protected static ref MoreExplosives m_Instance;
 
     const string MOD_BASE_PATH 	= "$profile:/MoreExplosives/";
-	const string CFG_MOE 		= "CfgMoreExplosives ";
+	const string CFG_MOE 		= "CfgMoreExplosives";
 
     ref protected MOE_Config m_Config;
-    ref protected MOE_DestructionSystem m_DestructionSystem;
+    ref protected MOE_DestructionSystemBase m_DestructionSystem;
     ref protected MOE_RaidScheduling m_RaidScheduling;
+	//ref protected MOE_NotificationSystem m_NotificationSystem;
 	
 	int MountingFailureState;
 
@@ -79,24 +80,24 @@ class MoreExplosives
 	
     void Init()
     {
-        CreateLogger();
+        //CreateLogger();
         CreateConfig();
         CreateDestructionSystem();
         CreateRaidScheduling();
     }
 
     
-	protected void CreateLogger()
-	{
-		MOE_Logger.GetInstance();
-	}
+	//protected void CreateLogger()
+	//{
+	//	MOE_Logger.GetInstance();
+	//}
 
     MOE_Config GetConfig()
     {
         return m_Config;
     }
 
-    MOE_DestructionSystem GetDestructionSystem()
+    MOE_DestructionSystemBase GetDestructionSystem()
     {
         return m_DestructionSystem;
     }
@@ -105,6 +106,11 @@ class MoreExplosives
     {
         return m_RaidScheduling;
     }
+	
+	//MOE_NotificationSystem GetNotificationSystem()
+    //{
+    //    return m_NotificationSystem;
+    //}
 
     protected void CreateConfig()
     {
@@ -121,6 +127,11 @@ class MoreExplosives
         m_RaidScheduling = new MOE_RaidScheduling();
     }
 
+	//protected void CreateNotificationSystem()
+    //{
+    //    m_NotificationSystem = new MOE_NotificationSystem();
+    //}
+		
     static MoreExplosives GetInstance()
 	{
 		if(!m_Instance) 

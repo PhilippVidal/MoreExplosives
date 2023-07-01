@@ -24,8 +24,18 @@ modded class BaseBuildingBase
 			Log_MOE(string.Format("BaseBuildingBase::HandleDamage_MOE -> MOE_ExplosionObject does not have a valid source explosive (%1)", explosionObject.GetSourceExplosive()), MOE_ELogTypes.ERROR);
 			return true;
 		}
+		
+		MOE_HitInfo hitInfo = new MOE_HitInfo();
+		hitInfo.Explosive = explosive;
+		hitInfo.ExplosionObject = explosionObject;
+		hitInfo.Target = this;
+		hitInfo.HitComponent = component;
+		hitInfo.TargetZone = dmgZone;
+		hitInfo.Ammo = ammo;
+		hitInfo.HitPosition = explosionObject.GetPosition();
+		hitInfo.IsAreaHit = true;
 
-		return !GetMOE().GetDestructionSystem().HandleExplosionHit(explosive, explosionObject, this, component, dmgZone, ammo);
+		return !GetMOE().GetDestructionSystem().HandleExplosionHit(hitInfo);
 	}
 	
 	bool HasGate_MOE()
@@ -79,6 +89,14 @@ modded class BaseBuildingBase
 	EntityAI GetLock_MOE()
 	{
 		return FindAttachmentBySlotName("Att_CombinationLock");
+	}
+	
+	
+	bool GetPartFromComponent_MOE(int component, out ConstructionPart part)
+	{
+		string comp = GetActionComponentName(component, "fire");
+		part = GetConstruction().GetConstructionPart(comp);
+		return part != null;
 	}
 }
 

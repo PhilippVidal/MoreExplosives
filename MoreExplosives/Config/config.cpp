@@ -248,9 +248,9 @@ class CfgVehicles
 			
 			//On which targets can the explosive be mounted? 
 			//0 = Everywhere
-			//1 = Only on Base Building Objects
+			//1 = Only on Base Building objects
 			//2 = Only on selected objects
-			mountingMode = 0;
+			mountingMode = 2;
 			
 			explosionBehaviour = "MOE_SingleExplosion";
 
@@ -294,7 +294,7 @@ class CfgVehicles
 			canOnlyDamagePlacementTarget = 0;
 			canOnlyMountDuringSchedule = 0;
 	
-			mountingMode = 0;
+			mountingMode = 2;
 			
 			explosionBehaviour = "MOE_SingleExplosion";
 
@@ -500,10 +500,18 @@ class CfgVehicles
 			//Which explosive types can be mounted on this object? 
 			//if not defined defaults to 0 (false)
 			//requires proper mounting mode to be set on explosive
-			class Mountable
+			class MountableExplosives
 			{
 				MOE_Explosive_Homemade = 1;
 				MOE_Explosive_Military = 0;
+			};
+			
+			class MountableParts
+			{
+				class MOE_Explosive_Homemade
+				{
+					wall_metal_up = 1;
+				};
 			};
 
 			//Manually determined order in which the damage zones are damaged
@@ -616,14 +624,21 @@ class CfgVehicles
 				MOE_Explosive_Military = 1;
 			};
 			
-			class Mountable
+			class MountableExplosives
 			{
 				MOE_Explosive_Homemade = 1;
 				MOE_Explosive_Military = 1;
 			};
+			
+			//class MountableParts
+			//{
+			//	class MOE_Explosive_Homemade
+			//	{
+			//		Level_1_Wall_1_Metal_Up = 1;
+			//	};
+			//};
 
-			damageZonePriorities[]= 
-			{
+			damageZonePriorities[]= {
 				"Level_1_Wall_1_Metal_Up",
 				"Level_1_Wall_1_Metal_Down",
 				"Level_1_Wall_1_Wood_Up",

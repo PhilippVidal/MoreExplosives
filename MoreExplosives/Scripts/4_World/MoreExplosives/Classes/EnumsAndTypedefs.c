@@ -41,8 +41,7 @@ enum MOE_EExplosiveMountingModes
 {
 	EVERYWHERE, 
 	BASEBUILDINGONLY,
-	SELECTEDONLY,
-	ANYTARGET
+	SELECTEDONLY
 }
 
 enum MOE_EDamageSystemTypes
