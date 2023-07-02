@@ -43,7 +43,7 @@ class MOE_SignalSource : MOE_StateSyncedItemBase
 		m_ConfigData = GetMOEConfig().GetSignalSourceData(GetType());
 	}
 	
-		bool IsTurnedOn()
+	bool IsTurnedOn()
 	{
 		return true;
 	}
