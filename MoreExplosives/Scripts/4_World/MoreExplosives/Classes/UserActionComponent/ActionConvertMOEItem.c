@@ -53,6 +53,11 @@ class MOE_ActionConvertItem : ActionContinuousBase
 
 	override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
 	{		
+		if(item.GetCompEM() && item.GetCompEM().IsSwitchedOn())
+		{
+			return false;
+		}
+		
 		MOE_ComponentTriggerBase trigger;	
 		if(CastTo(trigger, item))
 		{
@@ -64,7 +69,7 @@ class MOE_ActionConvertItem : ActionContinuousBase
 		{
 			return detonator.CanBeConvertedToItem() && !detonator.GetConnectionCount();
 		}
-
+		
 		return false;
 	}
 	
