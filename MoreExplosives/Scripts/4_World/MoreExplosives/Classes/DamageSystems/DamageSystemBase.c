@@ -12,7 +12,7 @@ class MOE_DamageSystemBase
 	
 	bool CanDealDamage(MOE_HitInfo hitInfo)
 	{
-		if(hitInfo.Target)
+		if(!hitInfo.Target)
 		{
 			return false;
 		}
@@ -58,7 +58,7 @@ class MOE_DamageSystemBase
 		hitInfo.Explosive.GetInteractingPlayer(playerName, playerSteam64);
 			
 		string logString = string.Format(
-							"Object damaged:\nPlayer: %1 [%2],\nTarget: %3 [%4],\n Source: %6 [%7]\n",
+							"Object hit:\n------------ Player: %1 [%2], Target: %3 [%4], Source: %6 [%7]\n",
 							playerName,
 							playerSteam64,
 							hitInfo.Target, 
@@ -72,7 +72,7 @@ class MOE_DamageSystemBase
 	
 	void OnDamageDealt(MOE_DamageInfo damageInfo)
 	{	
-		string logString = string.Format("--- Damage dealt to %1: %2, Health Before: %3, Health After: %4\n",
+		string logString = string.Format("------------------ Damage dealt to %1: %2, Health Before: %3, Health After: %4\n",
 							damageInfo.Zone,
 							damageInfo.Damage,
 							damageInfo.HealthBefore,
