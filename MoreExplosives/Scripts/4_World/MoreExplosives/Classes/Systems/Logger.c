@@ -8,7 +8,6 @@ static void Log_MOE(array<string> messages, int type = 0)
 	MOE_Logger.GetInstance().Log(messages, type);
 }
 
-
 class MOE_Logger 
 {
 	protected static ref MOE_Logger m_Instance;
@@ -65,15 +64,15 @@ class MOE_Logger
 		CloseFile(m_LogFileHandle);
 	}
 	
+	
 	void Log(array<string> messages, int type = -1)
 	{		
-		if(!GetLogFileHandle(m_LogFileHandle))
+		if(!messages || !messages.Count() || !GetLogFileHandle(m_LogFileHandle))
 		{
 			return;
 		}
 		
-		string prefix;
-		
+		string prefix;		
 		if(type > -1)
 		{
 			prefix = string.Format(
@@ -82,9 +81,11 @@ class MOE_Logger
 						GetLogPrefix(type));
 		} 
 		
+		messages[0] = prefix + messages[0];
+		
 		foreach(string message : messages)
 		{
-			WriteLine(prefix + message);
+			Write(message);
 		}
 	
 		CloseFile(m_LogFileHandle);
