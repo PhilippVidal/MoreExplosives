@@ -95,7 +95,6 @@ modded class BaseBuildingBase
 	bool GetPartFromComponent_MOE(int component, out ConstructionPart part)
 	{
 		string comp = GetActionComponentName(component, LOD.NAME_FIRE);
-		//Print(string.Format("Comp[%1] FIRE = %2", component, comp));
 		part = GetConstruction().GetConstructionPart(comp);
 		return part != null;
 	}
