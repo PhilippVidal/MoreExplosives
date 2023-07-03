@@ -500,19 +500,21 @@ class CfgVehicles
 			//Which explosive types can be mounted on this object? 
 			//if not defined defaults to 0 (false)
 			//requires proper mounting mode to be set on explosive
-			class MountableExplosives
-			{
-				MOE_Explosive_Homemade = 1;
-				MOE_Explosive_Military = 0;
-			};
+			//class MountableExplosives
+			//{
+			//	MOE_Explosive_Homemade = 1;
+			//	MOE_Explosive_Military = 1;
+			//};
 			
-			class MountableParts
-			{
-				class MOE_Explosive_Homemade
-				{
-					wall_metal_up = 1;
-				};
-			};
+			//Which parts can the explosive be mounted on? 
+			//Currently this does not work with BBP
+			//class MountableParts
+			//{
+			//	class MOE_Explosive_Homemade
+			//	{
+			//		wall_metal_up = 1;
+			//	};
+			//};
 
 			//Manually determined order in which the damage zones are damaged
 			//zones that are not listed get appended at the end
@@ -624,18 +626,10 @@ class CfgVehicles
 				MOE_Explosive_Military = 1;
 			};
 			
-			class MountableExplosives
-			{
-				MOE_Explosive_Homemade = 1;
-				MOE_Explosive_Military = 1;
-			};
-			
-			//class MountableParts
+			//class MountableExplosives
 			//{
-			//	class MOE_Explosive_Homemade
-			//	{
-			//		Level_1_Wall_1_Metal_Up = 1;
-			//	};
+			//	MOE_Explosive_Homemade = 1;
+			//	MOE_Explosive_Military = 1;
 			//};
 
 			damageZonePriorities[]= {
