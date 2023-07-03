@@ -51,23 +51,18 @@ class CfgMoreExplosives
 	doorRaidOnlyEnabled = 0;
 
 	//Should locks be deleted after an object has successfully been raided? 
-	//Without this enabled vanilla dayz locks will usually drop to the ground when the object/part gets destroyed
+	//Without this enabled vanilla dayz locks will drop to the ground when the object/part gets destroyed
 	deleteLocks = 0;
 
-	//Should the base be destroyed after an object has been successfully been raided? 
+	//Should the base be destroyed after an object has successfully been raided? 
 	//Some parts on base building objects are marked as being a "base" for the object (e.g., the two wooden logs on each side of vanilla dayz fences)
-	//Those parts are generally unaffected by damage, but enabling this option will delete them automatially once all other parts are destroyed
+	//Those parts are generally unaffected by damage, but enabling this option will delete them automatically once all other parts are destroyed
 	destroyBaseAfterDestruction = 0;
-
-	//Should explosives damage their placement target directly instead of using other methods of hit detection? 
-	//In certain situations (e.g., having a base inside a building) hit detection using an explosion might not detect the target properly 
-	//Enabling this option will essentially guarantee damage evaluation for the placement target in 
-	//such a scenario, though hit detection for other objects in the vicinity will still be affected
-	damagePlacementTargetDirectly = 1;
 
 
 	//Should explosives be attached to whatever target (if any) they are placed on?
 	//For example explosives that are placed on the gate of a fence will move with the gate when it is opened
+	//Currently does not work with BBP
 	parentExplosivesToTarget = 1;
 
 
