@@ -495,14 +495,16 @@ class CfgVehicles
 			//Which explosive types can be mounted on this object? 
 			//if not defined defaults to 0 (false)
 			//requires proper mounting mode to be set on explosive
-			//class MountableExplosives
-			//{
-			//	MOE_Explosive_Homemade = 1;
-			//	MOE_Explosive_Military = 1;
-			//};
+			class MountableExplosives
+			{
+				MOE_Explosive_Homemade = 1;
+				MOE_Explosive_Military = 1;
+			};
 			
-			//Which parts can the explosive be mounted on? 
-			//Currently this does not work with BBP
+			//Which parts can the explosive be mounted on? (0 or 1)
+			//Having a sub-class for a specific explosive type defined enables this feature (hence why it's commented-out by default)
+			//Does not work when mounting mode is set to "Everywhere"
+			//Part names can be found under "CfgVehicles <CLASSNAME> Construction <MAIN_PART_NAME> <PART_NAME>"
 			//class MountableParts
 			//{
 			//	class MOE_Explosive_Homemade
