@@ -245,7 +245,7 @@ class CfgVehicles
 			//0 = Everywhere
 			//1 = Only on Base Building objects
 			//2 = Only on selected objects
-			mountingMode = 2;
+			mountingMode = 0;
 			
 			explosionBehaviour = "MOE_SingleExplosion";
 
@@ -289,7 +289,7 @@ class CfgVehicles
 			canOnlyDamagePlacementTarget = 0;
 			canOnlyMountDuringSchedule = 0;
 	
-			mountingMode = 2;
+			mountingMode = 0;
 			
 			explosionBehaviour = "MOE_SingleExplosion";
 
